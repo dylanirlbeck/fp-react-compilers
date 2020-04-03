@@ -1,0 +1,1478 @@
+import { Image, Split } from "mdx-deck";
+import {
+  CodeSurfer,
+  CodeSurferColumns,
+  Step,
+} from "code-surfer";
+import {
+  vsDark,
+  github,
+  nightOwl,
+} from "@code-surfer/themes";
+import Author from "./slides/Author";
+import OneEndpoint from "./slides/OneEndpoint/";
+import MountingExample from "./slides/MountingExample";
+import TableOfContents from "./slides/TableOfContents";
+import MutationExample from "./slides/MutationExample/";
+import OnDemandExample from "./slides/OnDemandExample/";
+import ClientAlternatives from "./slides//ClientAlternatives/";
+import SimpleProfilePlaceholder from "./components/ui/SimpleProfilePlaceholder";
+import QueryAndMutationExample from "./slides/QueryAndMutationExample";
+
+export const theme = nightOwl;
+
+# Functional Programming, React, and Compilers in ReasonML
+
+---
+
+<Author />
+
+---
+
+<TableOfContents activeStep={0} />
+
+---
+
+# We had SSR
+
+<small>
+  <em>Reload page on every request</em>
+</small>
+
+<Image
+  src="https://sitedown.co/sites/default/files/styles/800px/public/reports/Screen%20shot%202013-11-14%20at%2010.23.34%20PM.png?itok=Yfkg1ag6"
+  size={800}
+/>
+
+---
+
+# Along came XHR
+
+# 😑
+
+---
+
+<CodeSurfer>
+
+```js title="Who remembers this?"
+// Configure
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "/server", true);
+xhr.setRequestHeader(
+  "Content-Type",
+  "application/x-www-form-urlencoded"
+);
+
+// Callback
+xhr.onreadystatechange = function() {
+  if (this.readyState === 4 && this.status === 200) {
+    // Request finished. Do processing here.
+  }
+};
+
+// Send
+xhr.send("page=2&pageSize=10");
+```
+
+```js 1:7 title="Who remembers this?"
+// Configure
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "/server", true);
+xhr.setRequestHeader(
+  "Content-Type",
+  "application/x-www-form-urlencoded"
+);
+
+// Callback
+xhr.onreadystatechange = function() {
+  if (this.readyState === 4 && this.status === 200) {
+    // Request finished. Do processing here.
+  }
+};
+
+// Send
+xhr.send("page=2&pageSize=10");
+```
+
+```js 8:15 title="Who remembers this?"
+// Configure
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "/server", true);
+xhr.setRequestHeader(
+  "Content-Type",
+  "application/x-www-form-urlencoded"
+);
+
+// Callback
+xhr.onreadystatechange = function() {
+  if (this.readyState === 4 && this.status === 200) {
+    // Request finished. Do processing here.
+  }
+};
+
+// Send
+xhr.send("page=2&pageSize=10");
+```
+
+```js 15:17 title="Who remembers this?"
+// Configure
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "/server", true);
+xhr.setRequestHeader(
+  "Content-Type",
+  "application/x-www-form-urlencoded"
+);
+
+// Callback
+xhr.onreadystatechange = function() {
+  if (this.readyState === 4 && this.status === 200) {
+    // Request finished. Do processing here.
+  }
+};
+
+// Send
+xhr.send("page=2&pageSize=10");
+```
+
+</CodeSurfer>
+
+---
+
+# jQuery to the rescue
+
+# 🤯
+
+---
+
+<CodeSurfer>
+
+```js title="How about this?"
+$.ajax({
+  url: "/profile",
+  type: "GET",
+  data: "id=5",
+  success: function(data) {
+    // Handle success
+    $("#ajax-results").html(data);
+  },
+  error: function(e) {
+    // Handle error
+  },
+});
+```
+
+</CodeSurfer>
+
+---
+
+<CodeSurfer>
+
+```js title="But then we got this"
+$("#item").css("color", "#123456");
+$("#item").html("hello");
+$("#item").css("background-color", "#ffffff");
+
+// you could use this instead
+$("#item")
+  .css("color", "#123456")
+  .html("hello")
+  .css("background-color", "#ffffff");
+
+// or even
+var item = $("#item");
+item.css("color", "#123456");
+item.html("hello");
+item.css("background-color", "#ffffff");
+
+// as for loops, this is a big no-no
+console.time("no cache");
+for (var i = 0; i < 1000; i++) {
+  $("#list").append(i);
+}
+console.timeEnd("no cache");
+
+// much better this way
+console.time("cache");
+var item = $("#list");
+
+for (var i = 0; i < 1000; i++) {
+  item.append(i);
+}
+console.timeEnd("cache");
+```
+
+</CodeSurfer>
+
+---
+
+# Save us Angular!
+
+🥺
+
+---
+
+<CodeSurfer>
+
+```js title="It was amazing" subtitle="Organized code, template binding, routing, and services!"
+app.controller("Ctrl", function($scope) {
+  this.name = "name";
+
+  $scope.$watch(
+    angular.bind(function() {
+      return this.title;
+    }),
+    function(newVal, oldVal) {}
+  );
+});
+```
+
+</CodeSurfer>
+
+---
+
+<CodeSurfer>
+
+```js title="rootScope is evil" subtitle="Two-way binding is crazy"
+var myObject = {
+  status: 10,
+};
+
+$rootScope.$broadcast("status_updated", myObject);
+
+$rootScope.$on("status_updated", function(event, obj) {
+  console.log(obj.status); // 10
+});
+```
+
+</CodeSurfer>
+
+---
+
+# #react
+
+<iframe
+  src="https://giphy.com/embed/l0NwKAlZzZ9pyi9fa"
+  width="500"
+  height="400"
+  frameBorder="0"
+  class="giphy-embed"
+  allowFullScreen
+/>
+
+---
+
+<CodeSurfer>
+
+```jsx title="Mind.  Blown.  Again.    🤯"
+class Username extends React.Component {
+  render() {
+    const { firstName, lastName } = this.props;
+    return (
+      <h1>
+        {firstName} {lastName}
+      </h1>
+    );
+  }
+}
+```
+
+</CodeSurfer>
+
+---
+
+<CodeSurferColumns>
+
+<Step>
+
+```js title="Component"
+class Profile extends React.Component {
+  componentDidMount() {
+    this.props.fetchProfile();
+  }
+
+  render() {
+    // return JSX
+  }
+}
+
+// Select data from Redux
+const mapStateToProps = state => ({
+  profile: state.profile,
+});
+
+// Connect Action Creators to Redux
+const mapDispatchToProps = {
+  fetchProfile,
+};
+
+// Connect to Redux
+const ConnectedProfile = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Profile);
+
+export default ConnectedProfile;
+```
+
+```js title="Actions"
+// Redux Action Creators
+const fetchProfileRequest = () => ({
+  type: "FETCH_PROFILE_REQUEST",
+  payload: {},
+});
+
+const fetchProfileSuccess = ({ profile }) => ({
+  type: "FETCH_PROFILE_SUCCESS",
+  payload: { profile },
+});
+
+const fetchProfileFailure = ({ error }) => ({
+  type: "FETCH_PROFILE_ERROR",
+  payload: { error },
+});
+
+// Redux Action
+export const fetchProfile = ({ id }) => async dispatch => {
+  dispatch(fetchProfileRequest());
+  try {
+    const profile = await profileUtils.getProfile({ id });
+    fetchProfileSuccess({ profile });
+  } catch (error) {
+    fetchProfileFailure({ error });
+  }
+};
+```
+
+```js title="Reducer"
+// Initial state
+const initialState = {
+  error: null,
+  loading: false,
+  profile: null,
+};
+
+export default reducer = (state = initialState, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case "FETCH_PROFILE_REQUEST":
+      return {
+        ...state,
+        error: null,
+        loading: true,
+        profile: null,
+      };
+    case "FETCH_PROFILE_SUCCESS":
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        profile: payload.profile,
+      };
+    case "FETCH_PROFILE_FAILURE":
+      return {
+        ...state,
+        error: payload.error,
+        loading: false,
+        profile: null,
+      };
+    default:
+      return state;
+  }
+};
+```
+
+</Step>
+
+<Step>
+
+```js 12:26 title="Component" subtitle="Connect to Redux"
+// Component
+class Profile extends React.Component {
+  componentDidMount() {
+    this.props.fetchProfile();
+  }
+
+  render() {
+    // return JSX
+  }
+}
+
+// Select data from Redux
+const mapStateToProps = state => ({
+  profile: state.profile,
+});
+
+// Connect Action Creators to Redux
+const mapDispatchToProps = {
+  fetchProfile,
+};
+
+// Connect to Redux
+const ConnectedProfile = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Profile);
+
+export default ConnectedProfile;
+```
+
+```js 15:26 title="Actions" subtitle="Higher-order async function via redux-thunk"
+// Redux Action Creators
+const fetchProfileRequest = () => ({
+  type: "FETCH_PROFILE_REQUEST",
+  payload: {},
+});
+
+const fetchProfileSuccess = ({ profile }) => ({
+  type: "FETCH_PROFILE_SUCCESS",
+  payload: { profile },
+});
+
+const fetchProfileFailure = ({ error }) => ({
+  type: "FETCH_PROFILE_ERROR",
+  payload: { error },
+});
+
+// Redux Action
+export const fetchProfile = ({ id }) => async dispatch => {
+  dispatch(fetchProfileRequest());
+  try {
+    const profile = await profileUtils.getProfile({ id });
+    fetchProfileSuccess({ profile });
+  } catch (error) {
+    fetchProfileFailure({ error });
+  }
+};
+```
+
+```js 6:36 title="Reducer" subtitle="Handle state updates from dispatched events"
+// Initial state
+const initialState = {
+  error: null,
+  loading: false,
+  profile: null,
+};
+
+export default reducer = (state = initialState, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case "FETCH_PROFILE_REQUEST":
+      return {
+        ...state,
+        error: null,
+        loading: true,
+        profile: null,
+      };
+    case "FETCH_PROFILE_SUCCESS":
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        profile: payload.profile,
+      };
+    case "FETCH_PROFILE_FAILURE":
+      return {
+        ...state,
+        error: payload.error,
+        loading: false,
+        profile: null,
+      };
+    default:
+      return state;
+  }
+};
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+---
+
+# Same fundamental problems
+
+- Consume APIs
+
+- Manage frontend state
+
+- Keep moving forward
+
+---
+
+<TableOfContents activeStep={1} />
+
+---
+
+# GraphQL
+
+Spec released by Facebook in 2015
+
+- Shift to mobile
+
+- High network usage
+
+- Interconnected data
+
+- [Interview with Lee Byron (Co-creator GraphQL)](https://nordicapis.com/interview-with-graphql-co-creator-lee-byron/)
+
+---
+
+# It's a spec, not code
+
+---
+
+# [HEAVY adoption](https://landscape.graphql.org/category=graph-ql-adopter&format=card-mode&grouping=category)
+
+---
+
+# Shift to mobile
+
+- News Feed on iOS app
+
+- Less powerful devices
+
+- Flaky networks
+
+---
+
+# High network usage
+
+<CodeSurferColumns>
+
+<Step>
+
+```js title="REST Request /profile"
+{
+  id: 1,
+  age: 29,
+  firstName: 'John',
+  lastName: 'Smith',
+  nationality: 'Canadian',
+  mothersMaidenName: 'Johnson',
+  fathersFirstPet: 'Goldy the goldfish',
+  email: 'john.smith@email.com',
+  interests: ['Skiing', 'Comic Books'],
+  profilePictureUrl: 'https://thispersondoesnotexist.com/',
+  relationshipStatus: {
+    status: "its_complicated",
+    partner: {
+      firstName: 'Jessica',
+      lastname: 'Thompson',
+      age: 30,
+      nationality: 'American'
+    }
+  }
+}
+```
+
+```js title="What we actually need"
+{
+  id: 1,
+  firstName: 'John',
+  lastName: 'Smith',
+  profilePictureUrl: 'https://thispersondoesnotexist.com/'
+}
+```
+
+<SimpleProfilePlaceholder />
+
+</Step>
+
+</CodeSurferColumns>
+
+---
+
+# Interconnected data
+
+<CodeSurferColumns>
+
+<Step>
+
+```js title="GET /users"
+[
+  { id: 1, firstName: "John" },
+  { id: 2, firstName: "Sarah" },
+  { id: 3, firstName: "Julia" },
+];
+```
+
+```js title="GET /blog-posts"
+[
+  { id: 1, authorId: 2 },
+  { id: 2, authorId: 2 },
+  { id: 3, authorId: 3 },
+];
+```
+
+```js title="Connect" subtitle="This isn't just annoying, it can have runtime perf issues"
+const getUserProfileForBlogPost = postId => {
+  // Traverse Blog Posts
+  const author = blogPosts.find(post => post.id === postId);
+
+  // Traverse users
+  const user = users.find(user => user.id === author.id);
+
+  return user;
+};
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+---
+
+# Other problems too!
+
+Developer Communication
+
+<iframe
+  src="https://giphy.com/embed/9xm2Ihyd7Mmy7nbCu7"
+  width="700"
+  height="500"
+  frameBorder="0"
+  class="giphy-embed"
+  allowFullScreen
+/>
+
+---
+
+# Other problems too!
+
+Documentation
+
+<iframe
+  src="https://giphy.com/embed/iGvWZBfhOmBKEtWJmF"
+  width="500"
+  height="500"
+  frameBorder="0"
+  class="giphy-embed"
+  allowFullScreen
+/>
+
+---
+
+# GraphQL can help
+
+---
+
+<TableOfContents activeStep={2} />
+
+---
+
+# Core Tenets
+
+- One endpoint
+
+- Query connected data
+
+- Strongly enforced contract
+
+---
+
+<OneEndpoint />
+
+---
+
+# GraphQL Schema (Backend)
+
+- TypeDefs
+
+- Resolvers
+
+---
+
+# TypeDefs
+
+The definition of what a GraphQL API exposes
+
+- Input Types
+
+- Output Types
+
+- Queries (GET)
+
+- Mutations (PUT, PATCH, POST, DELETE)
+
+---
+
+<CodeSurferColumns>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+}
+```
+
+```js title="Client"
+// Nothing yet
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+```
+
+```js title="Client"
+// Nothing yet
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  title: String!
+  content: String!
+}
+```
+
+```js title="Client"
+// Nothing yet
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+```
+
+```js title="Client"
+// Nothing yet
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+}
+```
+
+```js title="Client"
+query {
+  author(id: 1) {
+    fullName
+  }
+}
+```
+
+</Step>
+
+<Step>
+
+```js 4 title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+}
+```
+
+```js title="Client"
+query {
+  author(id: 1) {
+    fullName
+    blogPosts {
+      title
+    }
+  }
+}
+```
+
+</Step>
+
+<Step>
+
+```js 4 title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+}
+```
+
+```js title="Client"
+query {
+  author(id: 1) {
+    fullName
+    blogPosts {
+      title
+    }
+  }
+}
+
+// Results
+{
+  author: {
+    fullName: 'John Smith',
+    blogPosts: [
+      { title: 'Software Development 101' },
+      { title: 'Software Development 102' }
+    ]
+  }
+}
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+  blogPost(id: ID!): BlogPost!
+}
+```
+
+```js title="Client"
+query {
+  blogPost(id: 1) {
+    title
+    author {
+      age
+      lastName
+    }
+  }
+}
+
+// Results
+{
+  blogPost: {
+    title: 'Software Development 101'
+    author: {
+      age: 29,
+      lastName: 'Smith'
+    }
+  }
+}
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+  blogPost(id: ID!): BlogPost!
+}
+
+type Mutation {
+  updateBlogPost(????): BlogPost!
+}
+```
+
+```js title="Client"
+// Nothing here yet
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+  blogPost(id: ID!): BlogPost!
+}
+
+input UpdateBlogPostInput {
+  id: ID!
+  title: String
+  content: String
+}
+
+type Mutation {
+  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
+}
+```
+
+```js title="Client"
+mutation {
+  updateBlogPost(input: { id: 1, title: "This is a new title" }) {
+    title
+    id
+  }
+}
+
+// Results
+{
+  blogPost: {
+    id: 1
+    title: 'This is a new title'
+  }
+}
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+---
+
+# Not magic
+
+Because we need to write `resolvers`
+
+---
+
+<CodeSurferColumns>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+  blogPost(id: ID!): BlogPost!
+}
+
+input UpdateBlogPostInput {
+  id: ID!
+  title: String
+  content: String
+}
+
+type Mutation {
+  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
+}
+```
+
+```js title="Resolvers"
+const resolvers = {
+  Query: {
+    author: async (parent, args, context, info) => {
+      const user = await UserModel.findById(args.id);
+      return user;
+    },
+    blogPost: async (parent, args, context, info) => {
+      const blogPost = await BlogPostModel.findById(
+        args.id
+      );
+      return blogPost;
+    },
+  },
+};
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+  blogPost(id: ID!): BlogPost!
+}
+
+input UpdateBlogPostInput {
+  id: ID!
+  title: String
+  content: String
+}
+
+type Mutation {
+  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
+}
+```
+
+```js title="Resolvers"
+const resolvers = {
+  User: {
+    fullName: (parent, args, context, info) =>
+      `${parent.firstName} ${parent.lastName}`,
+    blogPosts: async (parent, args, context, info) => {
+      return await BlogPostModel.find({ authorId: parent.id })
+    }
+  },
+  BlogPost: {
+    author: (parent) => {
+      return await UserModel.findById(parent.authorId)
+    }
+  },
+  Query: {
+    author: async (parent, args, context, info) => {
+      const user = await UserModel.findById(args.id);
+      return user;
+    },
+    blogPost: async (parent, args, context, info) => {
+      const blogPost = await BlogPostModel.findById(
+        args.id
+      );
+      return blogPost;
+    },
+  },
+};
+```
+
+</Step>
+
+<Step>
+
+```js title="TypeDefs"
+type User {
+  id: ID!
+  age: Int
+  blogPosts: [BlogPost]!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+}
+
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author(id: ID!): User!
+  blogPost(id: ID!): BlogPost!
+}
+
+input UpdateBlogPostInput {
+  id: ID!
+  title: String
+  content: String
+}
+
+type Mutation {
+  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
+}
+```
+
+```js title="Resolvers"
+const resolvers = {
+  User: {
+    fullName: (parent, args, context, info) =>
+      `${parent.firstName} ${parent.lastName}`,
+    blogPosts: async (parent, args, context, info) => {
+      return await BlogPostModel.find({ authorId: parent.id })
+    }
+  },
+  BlogPost: {
+    author: (parent) => {
+      return await UserModel.findById(parent.authorId)
+    }
+  },
+  Query: {
+    author: async (parent, args, context, info) => {
+      const user = await UserModel.findById(args.id);
+      return user;
+    },
+    blogPost: async (parent, args, context, info) => {
+      const blogPost = await BlogPostModel.findById(
+        args.id
+      );
+      return blogPost;
+    },
+  },
+  Mutation: {
+    updateBlogPost: () => {
+      // Code to update a blog post
+    }
+  }
+};
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+---
+
+# TypeDefs + Resolvers = Schema
+
+- Enforce a strict contract
+
+- Consumer-focused
+
+---
+
+# A whole bunch of other stuff
+
+- Enums, Directives, Scalars, Unions, Interfaces, Subscriptions
+
+- Authentication, Authorization, Cost Analysis, N + 1
+
+---
+
+<TableOfContents activeStep={3} />
+
+---
+
+<ClientAlternatives />
+
+---
+
+# Apollo GraphQL
+
+- [Apollo Server](https://codesandbox.io/s/painless-development-with-graphql-luij2)
+
+- Apollo Client
+
+- [Apollo Graph Manager](https://www.apollographql.com/platform/)
+
+---
+
+# Apollo Client
+
+- Centralized config
+
+- Requests
+
+- Components
+
+- Caching
+
+---
+
+<MountingExample />
+
+---
+
+<OnDemandExample />
+
+---
+
+<MutationExample />
+
+---
+
+<QueryAndMutationExample />
+
+---
+
+# This is amazing
+
+<CodeSurferColumns>
+
+<Step>
+
+```js title="Component"
+// Component
+class Profile extends React.Component {
+  componentDidMount() {
+    this.props.fetchProfile();
+  }
+
+  render() {
+    // return JSX
+  }
+}
+
+// Select data from Redux
+const mapStateToProps = state => ({
+  profile: state.profile,
+});
+
+// Connect Action Creators to Redux
+const mapDispatchToProps = {
+  fetchProfile,
+};
+
+// Connect to Redux
+const ConnectedProfile = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Profile);
+
+export default ConnectedProfile;
+```
+
+```js title="Actions"
+// Redux Action Creators
+const fetchProfileRequest = () => ({
+  type: "FETCH_PROFILE_REQUEST",
+  payload: {},
+});
+
+const fetchProfileSuccess = ({ profile }) => ({
+  type: "FETCH_PROFILE_SUCCESS",
+  payload: { profile },
+});
+
+const fetchProfileFailure = ({ error }) => ({
+  type: "FETCH_PROFILE_ERROR",
+  payload: { error },
+});
+
+// Redux Action
+export const fetchProfile = ({ id }) => async dispatch => {
+  dispatch(fetchProfileRequest());
+  try {
+    const profile = await profileUtils.getProfile({ id });
+    fetchProfileSuccess({ profile });
+  } catch (error) {
+    fetchProfileFailure({ error });
+  }
+};
+```
+
+```js title="Reducer"
+// Initial state
+const initialState = {
+  error: null,
+  loading: false,
+  profile: null,
+};
+
+export default reducer = (state = initialState, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case "FETCH_PROFILE_REQUEST":
+      return {
+        ...state,
+        error: null,
+        loading: true,
+        profile: null,
+      };
+    case "FETCH_PROFILE_SUCCESS":
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        profile: payload.profile,
+      };
+    case "FETCH_PROFILE_FAILURE":
+      return {
+        ...state,
+        error: payload.error,
+        loading: false,
+        profile: null,
+      };
+    default:
+      return state;
+  }
+};
+```
+
+```js title="Apollo + Hooks" subtitle="No overfetching, no state management, localized state"
+const template = gql`
+  query {
+    me {
+      firstName
+    }
+  }
+`;
+
+const { data, error, loading } = useQuery(template);
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+---
+
+# So much faster
+
+(Blog Posts with createdAt & views)
+
+---
+
+<QueryAndMutationExample />
+
+---
+
+# What do we have?
+
+- Strong contract
+
+- Documentation
+
+- Centralized config
+
+- No overfetching
+
+- _Automatic_ state management
+
+---
+
+# What else?
+
+- The first time you do this, it's **really** hard
+
+- Bunch of extras to productionize an API
+
+---
+
+# Thank you + Q&A
+
+<iframe
+  src="https://giphy.com/embed/IcGkqdUmYLFGE"
+  width="800"
+  height="500"
+  frameBorder="0"
+  class="giphy-embed"
+  allowFullScreen
+/>
