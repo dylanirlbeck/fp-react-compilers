@@ -1,4 +1,4 @@
-import { Image, Split } from "mdx-deck";
+import { Notes, Image, Split } from "mdx-deck";
 import {
   CodeSurfer,
   CodeSurferColumns,
@@ -9,10 +9,12 @@ import {
   github,
   nightOwl,
 } from "@code-surfer/themes";
+
 import Author from "./slides/Author";
+import TableOfContents from "./slides/TableOfContents";
+
 import OneEndpoint from "./slides/OneEndpoint/";
 import MountingExample from "./slides/MountingExample";
-import TableOfContents from "./slides/TableOfContents";
 import MutationExample from "./slides/MutationExample/";
 import OnDemandExample from "./slides/OnDemandExample/";
 import ClientAlternatives from "./slides//ClientAlternatives/";
@@ -30,6 +32,71 @@ export const theme = nightOwl;
 ---
 
 <TableOfContents activeStep={0} />
+
+---
+
+## [The Functional Approach to Programming](https://www.vitalsource.com/products/the-functional-approach-to-programming-guy-cousineau-v9781107263796?duration=perpetual&utm_source=bing&utm_medium=cpc&utm_campaign=VST%20Tier%20Three%20Shopping&msclkid=3983b13c94dd139dbcf8efba3a4a3980)
+
+- Pure functions
+
+- Functions as first-class citizens
+
+- Immutability
+
+---
+
+## Pure functions pt 1
+
+<CodeSurfer>
+
+```javascript
+let sum = 0;
+
+let add = (list) => {
+  list.forEach(elem => sum += elem)
+  return sum
+};
+
+console.log(add([1,2,3])); // 6
+
+```
+
+</CodeSurfer>
+
+<Notes>
+Pure Functions Part 1: A function called multiple times with the same arguments will always return the same value. Always.
+
+In this case, the add function does not return the same value each time since it
+relies on the global "sum" variable.
+</Notes>
+
+---
+
+## Pure functions pt 2
+
+<CodeSurfer>
+
+```javascript
+let incrementValue = value => {
+  // State change
+  value++
+};
+
+let fetchData = url => {
+  // Network calll
+  let response = await fetch(url);
+};
+```
+
+</CodeSurfer>
+
+<Notes>
+Pure Functions Part 2: No side effects occur throughout the function's
+execution. A side effect is basically a state change in something other than the
+function that's currently executing it.
+
+Here we're changing the 
+</Notes>
 
 ---
 
@@ -1476,3 +1543,11 @@ const { data, error, loading } = useQuery(template);
   class="giphy-embed"
   allowFullScreen
 />
+
+---
+
+# Sources
+
+- https://thecodeboss.dev/2016/12/core-functional-programming-concepts/
+
+
