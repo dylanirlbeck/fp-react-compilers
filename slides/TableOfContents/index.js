@@ -5,10 +5,9 @@ const createStyleGetter = activeStep => step => ({
 });
 
 const steps = [
-  { title: "Looking back" },
-  { title: "Different paradigm" },
-  { title: "Core Tenets" },
-  { title: "Moving faster" },
+  { title: "The Functional Approach" },
+  { title: "Reason React" },
+  { title: "Compiler Theory" },
 ];
 
 const TableOfContents = props => {
