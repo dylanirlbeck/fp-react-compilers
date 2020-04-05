@@ -29,7 +29,6 @@ const Author = props => {
         images={[
           "https://avatars0.githubusercontent.com/u/20414525?s=280&v=4",
           "https://camo.githubusercontent.com/66f95b0b524b2fbf9f20b4e3233f9a762f5b293d/687474703a2f2f692e696d6775722e636f6d2f663641576776792e706e67",
-          "https://pluralsight.imgix.net/paths/path-icons/nodejs-601628d09d.png",
           "https://cdn.auth0.com/blog/react-js/react.png",
         ]}
       />
@@ -39,7 +38,6 @@ const Author = props => {
           "https://yt3.ggpht.com/a-/AAuE7mD8_NfciZ4tmKYDvEAjifelUjvG_wAEP5OwHw=s900-mo-c-c0xffffffff-rj-k-no",
           "https://www.softwareadvice.com/imglib/products/logos-hd/logo_41343_hd.png?v=9c332ab5f78a166f47eafdb48d4b4f12",
           "https://chicagoinnovation.com/wp-content/uploads/2017/05/Xaptum.png",
-          "https://cdn.greenhouse.io/external_greenhouse_job_boards/logos/000/004/005/original/Flexport_logo_1200x627.jpg?1553192591",
         ]}
       />
     </div>

@@ -20,6 +20,8 @@ import OnDemandExample from "./slides/OnDemandExample/";
 import ClientAlternatives from "./slides//ClientAlternatives/";
 import SimpleProfilePlaceholder from "./components/ui/SimpleProfilePlaceholder";
 import QueryAndMutationExample from "./slides/QueryAndMutationExample";
+import AST from './assets/images/AST.png'; // with import
+import JSFromAST from "./assets/images/JSFromAST.png";
 
 export const theme = nightOwl;
 
@@ -31,540 +33,114 @@ export const theme = nightOwl;
 
 ---
 
+## Reason
+
+- New syntax for OCaml that looks like JS
+- "Mostly" functional (OCaml)
+- 100% type coverage, inference, and soundness
+
+---
+
 <TableOfContents activeStep={0} />
 
 ---
 
 ## [The Functional Approach to Programming](https://www.vitalsource.com/products/the-functional-approach-to-programming-guy-cousineau-v9781107263796?duration=perpetual&utm_source=bing&utm_medium=cpc&utm_campaign=VST%20Tier%20Three%20Shopping&msclkid=3983b13c94dd139dbcf8efba3a4a3980)
 
-- Pure functions
-
 - Functions as first-class citizens
+
+- Pure functions
 
 - Immutability
 
 ---
 
-## Pure functions pt 1
+## Functions are first-class citizens
 
 <CodeSurfer>
 
-```javascript
-let sum = 0;
+```reason
+// Reason array
+let arr = [|1, 2, 3|];
 
-let add = (list) => {
-  list.forEach(elem => sum += elem)
-  return sum
-};
+// This is a function
+let double = elem => elem*2;
 
-console.log(add([1,2,3])); // 6
+let doubledArr = Array.map(double, arr); // [2, 4, 6]
+```
 
+</CodeSurfer>
+
+
+---
+
+## Functions are first-class citizens cont'd
+
+<CodeSurfer>
+
+```reason
+let add = (x, y) => x + y;
+let addFive = add(5);
+let eleven = addFive(6);
+let twelve = addFive(7);
 ```
 
 </CodeSurfer>
 
 <Notes>
-Pure Functions Part 1: A function called multiple times with the same arguments will always return the same value. Always.
-
-In this case, the add function does not return the same value each time since it
-relies on the global "sum" variable.
+add above is really syntax sugar for let add = (x) => (y) => x + y;
 </Notes>
+
 
 ---
 
-## Pure functions pt 2
+## Pure functions and side effects
 
 <CodeSurfer>
 
-```javascript
+```reason
+// Invalid Reason
 let incrementValue = value => {
-  // State change
   value++
 };
 
-let fetchData = url => {
-  // Network calll
-  let response = await fetch(url);
+// Valid Reason
+let incrementValue = value => {
+  value + 1
 };
 ```
 
 </CodeSurfer>
 
 <Notes>
-Pure Functions Part 2: No side effects occur throughout the function's
+Pure Functions: No side effects occur throughout the function's
 execution. A side effect is basically a state change in something other than the
-function that's currently executing it.
+function that's currently executing it. Also, same result for same input.
 
-Here we're changing the 
+Here we're trying to change the state of a variable..
 </Notes>
 
 ---
 
-# We had SSR
-
-<small>
-  <em>Reload page on every request</em>
-</small>
-
-<Image
-  src="https://sitedown.co/sites/default/files/styles/800px/public/reports/Screen%20shot%202013-11-14%20at%2010.23.34%20PM.png?itok=Yfkg1ag6"
-  size={800}
-/>
-
----
-
-# Along came XHR
-
-# 😑
-
----
+## Immutable data
 
 <CodeSurfer>
 
-```js title="Who remembers this?"
-// Configure
-var xhr = new XMLHttpRequest();
-xhr.open("POST", "/server", true);
-xhr.setRequestHeader(
-  "Content-Type",
-  "application/x-www-form-urlencoded"
-);
+```reason
+let x = 5;
 
-// Callback
-xhr.onreadystatechange = function() {
-  if (this.readyState === 4 && this.status === 200) {
-    // Request finished. Do processing here.
-  }
-};
+// Rest of your program
 
-// Send
-xhr.send("page=2&pageSize=10");
-```
-
-```js 1:7 title="Who remembers this?"
-// Configure
-var xhr = new XMLHttpRequest();
-xhr.open("POST", "/server", true);
-xhr.setRequestHeader(
-  "Content-Type",
-  "application/x-www-form-urlencoded"
-);
-
-// Callback
-xhr.onreadystatechange = function() {
-  if (this.readyState === 4 && this.status === 200) {
-    // Request finished. Do processing here.
-  }
-};
-
-// Send
-xhr.send("page=2&pageSize=10");
-```
-
-```js 8:15 title="Who remembers this?"
-// Configure
-var xhr = new XMLHttpRequest();
-xhr.open("POST", "/server", true);
-xhr.setRequestHeader(
-  "Content-Type",
-  "application/x-www-form-urlencoded"
-);
-
-// Callback
-xhr.onreadystatechange = function() {
-  if (this.readyState === 4 && this.status === 200) {
-    // Request finished. Do processing here.
-  }
-};
-
-// Send
-xhr.send("page=2&pageSize=10");
-```
-
-```js 15:17 title="Who remembers this?"
-// Configure
-var xhr = new XMLHttpRequest();
-xhr.open("POST", "/server", true);
-xhr.setRequestHeader(
-  "Content-Type",
-  "application/x-www-form-urlencoded"
-);
-
-// Callback
-xhr.onreadystatechange = function() {
-  if (this.readyState === 4 && this.status === 200) {
-    // Request finished. Do processing here.
-  }
-};
-
-// Send
-xhr.send("page=2&pageSize=10");
+Js.log(x); // 5
 ```
 
 </CodeSurfer>
 
----
-
-# jQuery to the rescue
-
-# 🤯
-
----
-
-<CodeSurfer>
-
-```js title="How about this?"
-$.ajax({
-  url: "/profile",
-  type: "GET",
-  data: "id=5",
-  success: function(data) {
-    // Handle success
-    $("#ajax-results").html(data);
-  },
-  error: function(e) {
-    // Handle error
-  },
-});
-```
-
-</CodeSurfer>
-
----
-
-<CodeSurfer>
-
-```js title="But then we got this"
-$("#item").css("color", "#123456");
-$("#item").html("hello");
-$("#item").css("background-color", "#ffffff");
-
-// you could use this instead
-$("#item")
-  .css("color", "#123456")
-  .html("hello")
-  .css("background-color", "#ffffff");
-
-// or even
-var item = $("#item");
-item.css("color", "#123456");
-item.html("hello");
-item.css("background-color", "#ffffff");
-
-// as for loops, this is a big no-no
-console.time("no cache");
-for (var i = 0; i < 1000; i++) {
-  $("#list").append(i);
-}
-console.timeEnd("no cache");
-
-// much better this way
-console.time("cache");
-var item = $("#list");
-
-for (var i = 0; i < 1000; i++) {
-  item.append(i);
-}
-console.timeEnd("cache");
-```
-
-</CodeSurfer>
-
----
-
-# Save us Angular!
-
-🥺
-
----
-
-<CodeSurfer>
-
-```js title="It was amazing" subtitle="Organized code, template binding, routing, and services!"
-app.controller("Ctrl", function($scope) {
-  this.name = "name";
-
-  $scope.$watch(
-    angular.bind(function() {
-      return this.title;
-    }),
-    function(newVal, oldVal) {}
-  );
-});
-```
-
-</CodeSurfer>
-
----
-
-<CodeSurfer>
-
-```js title="rootScope is evil" subtitle="Two-way binding is crazy"
-var myObject = {
-  status: 10,
-};
-
-$rootScope.$broadcast("status_updated", myObject);
-
-$rootScope.$on("status_updated", function(event, obj) {
-  console.log(obj.status); // 10
-});
-```
-
-</CodeSurfer>
-
----
-
-# #react
-
-<iframe
-  src="https://giphy.com/embed/l0NwKAlZzZ9pyi9fa"
-  width="500"
-  height="400"
-  frameBorder="0"
-  class="giphy-embed"
-  allowFullScreen
-/>
-
----
-
-<CodeSurfer>
-
-```jsx title="Mind.  Blown.  Again.    🤯"
-class Username extends React.Component {
-  render() {
-    const { firstName, lastName } = this.props;
-    return (
-      <h1>
-        {firstName} {lastName}
-      </h1>
-    );
-  }
-}
-```
-
-</CodeSurfer>
-
----
-
-<CodeSurferColumns>
-
-<Step>
-
-```js title="Component"
-class Profile extends React.Component {
-  componentDidMount() {
-    this.props.fetchProfile();
-  }
-
-  render() {
-    // return JSX
-  }
-}
-
-// Select data from Redux
-const mapStateToProps = state => ({
-  profile: state.profile,
-});
-
-// Connect Action Creators to Redux
-const mapDispatchToProps = {
-  fetchProfile,
-};
-
-// Connect to Redux
-const ConnectedProfile = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Profile);
-
-export default ConnectedProfile;
-```
-
-```js title="Actions"
-// Redux Action Creators
-const fetchProfileRequest = () => ({
-  type: "FETCH_PROFILE_REQUEST",
-  payload: {},
-});
-
-const fetchProfileSuccess = ({ profile }) => ({
-  type: "FETCH_PROFILE_SUCCESS",
-  payload: { profile },
-});
-
-const fetchProfileFailure = ({ error }) => ({
-  type: "FETCH_PROFILE_ERROR",
-  payload: { error },
-});
-
-// Redux Action
-export const fetchProfile = ({ id }) => async dispatch => {
-  dispatch(fetchProfileRequest());
-  try {
-    const profile = await profileUtils.getProfile({ id });
-    fetchProfileSuccess({ profile });
-  } catch (error) {
-    fetchProfileFailure({ error });
-  }
-};
-```
-
-```js title="Reducer"
-// Initial state
-const initialState = {
-  error: null,
-  loading: false,
-  profile: null,
-};
-
-export default reducer = (state = initialState, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case "FETCH_PROFILE_REQUEST":
-      return {
-        ...state,
-        error: null,
-        loading: true,
-        profile: null,
-      };
-    case "FETCH_PROFILE_SUCCESS":
-      return {
-        ...state,
-        error: false,
-        loading: false,
-        profile: payload.profile,
-      };
-    case "FETCH_PROFILE_FAILURE":
-      return {
-        ...state,
-        error: payload.error,
-        loading: false,
-        profile: null,
-      };
-    default:
-      return state;
-  }
-};
-```
-
-</Step>
-
-<Step>
-
-```js 12:26 title="Component" subtitle="Connect to Redux"
-// Component
-class Profile extends React.Component {
-  componentDidMount() {
-    this.props.fetchProfile();
-  }
-
-  render() {
-    // return JSX
-  }
-}
-
-// Select data from Redux
-const mapStateToProps = state => ({
-  profile: state.profile,
-});
-
-// Connect Action Creators to Redux
-const mapDispatchToProps = {
-  fetchProfile,
-};
-
-// Connect to Redux
-const ConnectedProfile = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Profile);
-
-export default ConnectedProfile;
-```
-
-```js 15:26 title="Actions" subtitle="Higher-order async function via redux-thunk"
-// Redux Action Creators
-const fetchProfileRequest = () => ({
-  type: "FETCH_PROFILE_REQUEST",
-  payload: {},
-});
-
-const fetchProfileSuccess = ({ profile }) => ({
-  type: "FETCH_PROFILE_SUCCESS",
-  payload: { profile },
-});
-
-const fetchProfileFailure = ({ error }) => ({
-  type: "FETCH_PROFILE_ERROR",
-  payload: { error },
-});
-
-// Redux Action
-export const fetchProfile = ({ id }) => async dispatch => {
-  dispatch(fetchProfileRequest());
-  try {
-    const profile = await profileUtils.getProfile({ id });
-    fetchProfileSuccess({ profile });
-  } catch (error) {
-    fetchProfileFailure({ error });
-  }
-};
-```
-
-```js 6:36 title="Reducer" subtitle="Handle state updates from dispatched events"
-// Initial state
-const initialState = {
-  error: null,
-  loading: false,
-  profile: null,
-};
-
-export default reducer = (state = initialState, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case "FETCH_PROFILE_REQUEST":
-      return {
-        ...state,
-        error: null,
-        loading: true,
-        profile: null,
-      };
-    case "FETCH_PROFILE_SUCCESS":
-      return {
-        ...state,
-        error: false,
-        loading: false,
-        profile: payload.profile,
-      };
-    case "FETCH_PROFILE_FAILURE":
-      return {
-        ...state,
-        error: payload.error,
-        loading: false,
-        profile: null,
-      };
-    default:
-      return state;
-  }
-};
-```
-
-</Step>
-
-</CodeSurferColumns>
-
----
-
-# Same fundamental problems
-
-- Consume APIs
-
-- Manage frontend state
-
-- Keep moving forward
+<Notes>
+Variables will always be of same value + type throughout the program. This is
+very mathematical in nature (what does it mean to be a variable and function in
+mathematics).
+</Notes>
 
 ---
 
@@ -572,156 +148,509 @@ export default reducer = (state = initialState, action) => {
 
 ---
 
-# GraphQL
+## Why write a compiler?
 
-Spec released by Facebook in 2015
+- Show off the core features of Reason
+- It's what Reason/OCaml is especially good at
+- TODO throw some pictures of compilers/software written in OCaml
 
-- Shift to mobile
-
-- High network usage
-
-- Interconnected data
-
-- [Interview with Lee Byron (Co-creator GraphQL)](https://nordicapis.com/interview-with-graphql-co-creator-lee-byron/)
+<Notes>
+Hack, Haxe, Flow, Infer, Coq, WebAssembly interpreter
+</Notes>
 
 ---
 
-# It's a spec, not code
+## What's in a compiler (condensed)
+
+1. Lexer/Tokenizer
+2. Parser
+3. Code Generation
+4. TODO throw in an image here instead (or some animations)
 
 ---
 
-# [HEAVY adoption](https://landscape.graphql.org/category=graph-ql-adopter&format=card-mode&grouping=category)
+## Define your frontend and backend (and sometimes your type system)
+
+- Frontend: Mini-C 
+- Type System: N/A
+- Backend: JavaScript
 
 ---
 
-# Shift to mobile
+## Lexer/Tokenizer
 
-- News Feed on iOS app
+Let's define the tokens of our language
 
-- Less powerful devices
-
-- Flaky networks
-
----
-
-# High network usage
-
-<CodeSurferColumns>
-
-<Step>
-
-```js title="REST Request /profile"
-{
-  id: 1,
-  age: 29,
-  firstName: 'John',
-  lastName: 'Smith',
-  nationality: 'Canadian',
-  mothersMaidenName: 'Johnson',
-  fathersFirstPet: 'Goldy the goldfish',
-  email: 'john.smith@email.com',
-  interests: ['Skiing', 'Comic Books'],
-  profilePictureUrl: 'https://thispersondoesnotexist.com/',
-  relationshipStatus: {
-    status: "its_complicated",
-    partner: {
-      firstName: 'Jessica',
-      lastname: 'Thompson',
-      age: 30,
-      nationality: 'American'
-    }
-  }
-}
+```C
+def f() 1 end
 ```
 
-```js title="What we actually need"
-{
-  id: 1,
-  firstName: 'John',
-  lastName: 'Smith',
-  profilePictureUrl: 'https://thispersondoesnotexist.com/'
-}
-```
-
-<SimpleProfilePlaceholder />
-
-</Step>
-
-</CodeSurferColumns>
+<Notes>
+</Notes>
 
 ---
 
-# Interconnected data
+How do we represent these tokens?
+```
+def
+f
+(
+)
+1
+end
+```
 
-<CodeSurferColumns>
+We use what's called a [variant](https://reasonml.github.io/docs/en/variant#docsNav)
 
-<Step>
+---
 
-```js title="GET /users"
+
+<CodeSurfer>
+
+```reason 3:8 title="Variant"
+// Tokenizer.re
+
+type token =
+  | DEF // def
+  | IDENT // f
+  | OPAREN // (
+  | CPAREN // )
+  | END // end
+  | INT // 2,3,etc
+  | COMMA; // ,
+```
+
+```reason 7:8 title="Variant"
+type token =
+  | DEF // def
+  | IDENT // f
+  | OPAREN // (
+  | CPAREN // )
+  | END // end
+  | INT // 2,3,etc
+  | COMMA; // ,
+```
+
+</CodeSurfer>
+
+<Notes>
+Smallest pieces that are meaningful
+</Notes>
+
+---
+
+How are we going to consume our input program? [Regular expressions](https://reasonml.github.io/docs/en/regular-expression#docsNav).
+
+<CodeSurfer>
+
+```reason
+//Tokenizer.re
+
+type tokenType = {
+  token,
+  regExp: Js.Re.t,
+};
+
+type tokenValue = {
+  token,
+  value: string,
+};
+
+// ^ means match beginning of input
+let defToken = {token: `DEF, regExp: [%re "/^(\\bdef\\b)/"]};
+let endToken = {token: `END, regExp: [%re "/^(\\bend\\b)/"]};
+let identToken = {token: `IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
+let intToken = {token: `INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
+let oparenToken = {token: `OPAREN, regExp: [%re "/^(\\()/"]};
+let cparenToken = {token: `CPAREN, regExp: [%re "/^(\\))/"]};
+let commaToken = {token: `COMMA, regExp: [%re "/^(\\,)/"]};
+
+// These are in a necessary order, i.e. don't want def to be an identifier
+let tokenTypes: array(tokenType) = [|
+  defToken,
+  endToken,
+  identToken,
+  intToken,
+  oparenToken,
+  cparenToken,
+  commaToken,
+|];
+```
+
+```reason 1:9
+type tokenType = {
+  token,
+  regExp: Js.Re.t,
+};
+
+type tokenValue = {
+  token,
+  value: string,
+};
+
+// ^ means match beginning of input
+let defToken = {token: `DEF, regExp: [%re "/^(\\bdef\\b)/"]};
+let endToken = {token: `END, regExp: [%re "/^(\\bend\\b)/"]};
+let identToken = {token: `IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
+let intToken = {token: `INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
+let oparenToken = {token: `OPAREN, regExp: [%re "/^(\\()/"]};
+let cparenToken = {token: `CPAREN, regExp: [%re "/^(\\))/"]};
+let commaToken = {token: `COMMA, regExp: [%re "/^(\\,)/"]};
+
+// These are in a necessary order, i.e. don't want def to be an identifier
+let tokenTypes: array(tokenType) = [|
+  defToken,
+  endToken,
+  identToken,
+  intToken,
+  oparenToken,
+  cparenToken,
+  commaToken,
+|];
+```
+
+```reason 10:32
+// These are records
+type tokenType = {
+  token,
+  regExp: Js.Re.t,
+};
+
+type tokenValue = {
+  token,
+  value: string,
+};
+
+// ^ means match beginning of input
+let defToken = {token: `DEF, regExp: [%re "/^(\\bdef\\b)/"]};
+let endToken = {token: `END, regExp: [%re "/^(\\bend\\b)/"]};
+let identToken = {token: `IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
+let intToken = {token: `INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
+let oparenToken = {token: `OPAREN, regExp: [%re "/^(\\()/"]};
+let cparenToken = {token: `CPAREN, regExp: [%re "/^(\\))/"]};
+let commaToken = {token: `COMMA, regExp: [%re "/^(\\,)/"]};
+
+// These are in a necessary order, i.e. don't want def to be an identifier
+let tokenTypes: array(tokenType) = [|
+  defToken,
+  endToken,
+  identToken,
+  intToken,
+  oparenToken,
+  cparenToken,
+  commaToken,
+|];
+```
+
+</CodeSurfer>
+
+---
+
+Now we throw it through a tokenizer function and...
+
+
+<CodeSurfer>
+
+```reason
+// Compiler.re
+
+let program = "def f(x,y,z) 1 end";
+let tokens = Tokenizer.make(program);
+Js.log(tokens);
+```
+
+</CodeSurfer>
+
+---
+
+<CodeSurfer>
+
+```json title="Tokens!"
 [
-  { id: 1, firstName: "John" },
-  { id: 2, firstName: "Sarah" },
-  { id: 3, firstName: "Julia" },
-];
+  { token: 3397029, value: 'def' },
+  { token: 895974096, value: 'f' },
+  { token: -780845765, value: '(' },
+  { token: 895974096, value: 'x' },
+  { token: -934581835, value: ',' },
+  { token: 895974096, value: 'y' },
+  { token: -934581835, value: ',' },
+  { token: 895974096, value: 'z' },
+  { token: 86829255, value: ')' },
+  { token: 895974096, value: 'g' },
+  { token: -780845765, value: '(' },
+  { token: 895974096, value: 'x' },
+  { token: -934581835, value: ',' },
+  { token: 895974096, value: 'y' },
+  { token: -934581835, value: ',' },
+  { token: 3647695, value: '1' },
+  { token: 86829255, value: ')' },
+  { token: 3448763, value: 'end' }
+]
 ```
 
-```js title="GET /blog-posts"
-[
-  { id: 1, authorId: 2 },
-  { id: 2, authorId: 2 },
-  { id: 3, authorId: 3 },
-];
+</CodeSurfer>
+
+---
+
+## Any questions?
+
+---
+
+## On to the parser
+
+The parser will analyze our sequence of tokens and create a tree representing
+the input program (also known as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree)).
+
+TODO put an image of a AST here
+
+---
+
+<CodeSurfer>
+
+```reason title="Types"
+type integerNode = {value: int}
+and callNode = {
+  name: string,
+  argExprs: array(exprNode),
+}
+and varRefNode = {value: string}
+and exprNode =
+  | callNode
+  | integerNode
+  | varRefNode;
+
+type defNode = {
+  name: string,
+  argNames: array(string),
+  body: exprNode,
+};
+
+type node =
+  | Def(defNode)
+  | Expr(exprNode);
 ```
 
-```js title="Connect" subtitle="This isn't just annoying, it can have runtime perf issues"
-const getUserProfileForBlogPost = postId => {
-  // Traverse Blog Posts
-  const author = blogPosts.find(post => post.id === postId);
+```reason 1:16 title="Types"
+type integerNode = {value: int}
+and callNode = {
+  name: string,
+  argExprs: array(exprNode),
+}
+and varRefNode = {value: string}
+and exprNode =
+  | callNode
+  | integerNode
+  | varRefNode;
 
-  // Traverse users
-  const user = users.find(user => user.id === author.id);
+type defNode = {
+  name: string,
+  argNames: array(string),
+  body: exprNode,
+};
 
-  return user;
+type node =
+  | Def(defNode)
+  | Expr(exprNode);
+```
+
+```reason 17:20 title="Types"
+type integerNode = {value: int}
+and callNode = {
+  name: string,
+  argExprs: array(exprNode),
+}
+and varRefNode = {value: string}
+and exprNode =
+  | callNode
+  | integerNode
+  | varRefNode;
+
+type defNode = {
+  name: string,
+  argNames: array(string),
+  body: exprNode,
+};
+
+type node =
+  | Def(defNode)
+  | Expr(exprNode);
+```
+
+</CodeSurfer>
+
+---
+
+Remember, we want to turn this;
+
+```
+def f(x) 1 end
+```
+
+into something like this:
+
+```
+DEF
+  NAME: "f"
+  ARGS: ["x"]
+  BODY:
+    INTEGER_LITERAL: "1"
+```
+
+---
+
+<CodeSurfer>
+
+```reason title="How do we parse integers?"
+let parseInteger = tokens => {
+  let (integerToken, newTokens) = consume(tokens, INT);
+  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  (ExprNode(integerNode), newTokens);
 };
 ```
 
-</Step>
+```reason 2 title="Consume the INT token"
+let parseInteger = tokens => {
+  let (integerToken, newTokens) = consume(tokens, INT);
+  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  (ExprNode(integerNode), newTokens);
+};
+```
 
-</CodeSurferColumns>
+```reason 3 title="Build the integerNode"
+let parseInteger = tokens => {
+  let (integerToken, newTokens) = consume(tokens, INT);
+  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  (ExprNode(integerNode), newTokens);
+};
+```
 
----
+```reason 4 title="Construct an ExprNode"
+let parseInteger = tokens => {
+  let (integerToken, newTokens) = consume(tokens, INT);
+  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  (ExprNode(integerNode), newTokens);
+};
+```
 
-# Other problems too!
 
-Developer Communication
-
-<iframe
-  src="https://giphy.com/embed/9xm2Ihyd7Mmy7nbCu7"
-  width="700"
-  height="500"
-  frameBorder="0"
-  class="giphy-embed"
-  allowFullScreen
-/>
-
----
-
-# Other problems too!
-
-Documentation
-
-<iframe
-  src="https://giphy.com/embed/iGvWZBfhOmBKEtWJmF"
-  width="500"
-  height="500"
-  frameBorder="0"
-  class="giphy-embed"
-  allowFullScreen
-/>
+</CodeSurfer>
 
 ---
 
-# GraphQL can help
+<CodeSurfer>
+
+```reason title="How do we parse expressions?"
+let parseExpr = tokens =>
+  if (peek(tokens, `INT, ())) {
+    parseInteger(tokens);
+  } else {
+    parseCall(tokens);
+  };
+```
+
+</CodeSurfer>
+
+---
+
+## Let's put it all together and create our AST
+
+
+---
+
+<CodeSurfer>
+
+```reason title="Parser"
+// Will return a tree
+let make = (tokens: array(tokenValue)) => {
+  let rec parse = tokens => {
+    // Start with parseDef
+    let (parsedDef, _) = parseDef(tokens);
+    [|parsedDef|];
+  };
+  parse(tokens);
+};
+```
+
+```reason 3:7 title="Recursive parse function"
+// Will return a tree
+let make = (tokens: array(tokenValue)) => {
+  let rec parse = tokens => {
+    // Start with parseDef
+    let (parsedDef, _) = parseDef(tokens);
+    [|parsedDef|];
+  };
+  parse(tokens);
+};
+```
+
+```reason 8 title="Call the recursive function and..."
+// Will return a tree
+let make = (tokens: array(tokenValue)) => {
+  let rec parse = tokens => {
+    // Start with parseDef
+    let (parsedDef, _) = parseDef(tokens);
+    [|parsedDef|];
+  };
+  parse(tokens);
+};
+```
+
+</CodeSurfer>
+
+---
+
+For an input of 
+```
+def f(x) ) end
+```
+
+we get this Abstract Syntax Tree:
+
+```
+DefNode(
+  {
+    name: "f"
+    argNames: "x"
+    body: ExprNode(
+      {
+        value: 1        
+      }
+    )
+  } 
+)
+```
+
+---
+
+## Questions so far?
+
+---
+
+## Now we're going to generate JavaScript from our input AST
+
+<div class="flex flex-row">
+  <img src={AST} />
+  <img src={JSFromAST} />
+</div>
+
+---
+
+
+
+---
+
+## Reason/OCaml Type system
+
+- Full type coverage
+- Inference
+- Soundness 
+
+<Notes>
+Contrast this with JavaScript
+</Notes>
+
+---
+
 
 ---
 
@@ -729,820 +658,60 @@ Documentation
 
 ---
 
-# Core Tenets
 
-- One endpoint
+## Core concepts of React
 
-- Query connected data
+1. Minimize application state
+2. Minimize side effects
 
-- Strongly enforced contract
-
----
-
-<OneEndpoint />
+<Notes>
+Jordan Walke did a talk, invented React and Reason etc.
+</Notes>
 
 ---
 
-# GraphQL Schema (Backend)
-
-- TypeDefs
-
-- Resolvers
-
----
-
-# TypeDefs
-
-The definition of what a GraphQL API exposes
-
-- Input Types
-
-- Output Types
-
-- Queries (GET)
-
-- Mutations (PUT, PATCH, POST, DELETE)
-
----
-
-<CodeSurferColumns>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  firstName: String!
-  lastName: String!
-}
-```
-
-```js title="Client"
-// Nothing yet
-```
-
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-```
-
-```js title="Client"
-// Nothing yet
-```
-
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  title: String!
-  content: String!
-}
-```
-
-```js title="Client"
-// Nothing yet
-```
-
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-```
-
-```js title="Client"
-// Nothing yet
-```
-
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-}
-```
-
-```js title="Client"
-query {
-  author(id: 1) {
-    fullName
-  }
-}
-```
-
-</Step>
-
-<Step>
-
-```js 4 title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-}
-```
-
-```js title="Client"
-query {
-  author(id: 1) {
-    fullName
-    blogPosts {
-      title
-    }
-  }
-}
-```
-
-</Step>
-
-<Step>
-
-```js 4 title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-}
-```
-
-```js title="Client"
-query {
-  author(id: 1) {
-    fullName
-    blogPosts {
-      title
-    }
-  }
-}
-
-// Results
-{
-  author: {
-    fullName: 'John Smith',
-    blogPosts: [
-      { title: 'Software Development 101' },
-      { title: 'Software Development 102' }
-    ]
-  }
-}
-```
-
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-  blogPost(id: ID!): BlogPost!
-}
-```
-
-```js title="Client"
-query {
-  blogPost(id: 1) {
-    title
-    author {
-      age
-      lastName
-    }
-  }
-}
-
-// Results
-{
-  blogPost: {
-    title: 'Software Development 101'
-    author: {
-      age: 29,
-      lastName: 'Smith'
-    }
-  }
-}
-```
-
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-  blogPost(id: ID!): BlogPost!
-}
-
-type Mutation {
-  updateBlogPost(????): BlogPost!
-}
-```
-
-```js title="Client"
-// Nothing here yet
-```
-
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-  blogPost(id: ID!): BlogPost!
-}
-
-input UpdateBlogPostInput {
-  id: ID!
-  title: String
-  content: String
-}
-
-type Mutation {
-  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
-}
-```
-
-```js title="Client"
-mutation {
-  updateBlogPost(input: { id: 1, title: "This is a new title" }) {
-    title
-    id
-  }
-}
-
-// Results
-{
-  blogPost: {
-    id: 1
-    title: 'This is a new title'
-  }
-}
-```
-
-</Step>
-
-</CodeSurferColumns>
-
----
-
-# Not magic
-
-Because we need to write `resolvers`
-
----
-
-<CodeSurferColumns>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-  blogPost(id: ID!): BlogPost!
-}
-
-input UpdateBlogPostInput {
-  id: ID!
-  title: String
-  content: String
-}
-
-type Mutation {
-  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
-}
-```
-
-```js title="Resolvers"
-const resolvers = {
-  Query: {
-    author: async (parent, args, context, info) => {
-      const user = await UserModel.findById(args.id);
-      return user;
-    },
-    blogPost: async (parent, args, context, info) => {
-      const blogPost = await BlogPostModel.findById(
-        args.id
-      );
-      return blogPost;
-    },
-  },
+<CodeSurfer>
+
+```reason
+[@react.component]
+let make = (~name) => {
+  let (count, setCount) = React.useState(() => 0);
+
+  <div>
+    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
+    <button onClick={_ => setCount(_ => count + 1)}>
+      {React.string("Click me")}
+    </button>
+  </div>
 };
 ```
+</CodeSurfer>
 
-</Step>
+<Notes>
+</Notes>
 
-<Step>
 
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
+## ReasonReact
 
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
+<CodeSurfer>
 
-type Query {
-  author(id: ID!): User!
-  blogPost(id: ID!): BlogPost!
-}
+```reason
+[@react.component]
+let make = (~name) => {
+  let (count, setCount) = React.useState(() => 0);
 
-input UpdateBlogPostInput {
-  id: ID!
-  title: String
-  content: String
-}
-
-type Mutation {
-  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
-}
-```
-
-```js title="Resolvers"
-const resolvers = {
-  User: {
-    fullName: (parent, args, context, info) =>
-      `${parent.firstName} ${parent.lastName}`,
-    blogPosts: async (parent, args, context, info) => {
-      return await BlogPostModel.find({ authorId: parent.id })
-    }
-  },
-  BlogPost: {
-    author: (parent) => {
-      return await UserModel.findById(parent.authorId)
-    }
-  },
-  Query: {
-    author: async (parent, args, context, info) => {
-      const user = await UserModel.findById(args.id);
-      return user;
-    },
-    blogPost: async (parent, args, context, info) => {
-      const blogPost = await BlogPostModel.findById(
-        args.id
-      );
-      return blogPost;
-    },
-  },
+  <div>
+    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
+    <button onClick={_ => setCount(_ => count + 1)}>
+      {React.string("Click me")}
+    </button>
+  </div>
 };
 ```
+</CodeSurfer>
 
-</Step>
-
-<Step>
-
-```js title="TypeDefs"
-type User {
-  id: ID!
-  age: Int
-  blogPosts: [BlogPost]!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-}
-
-type BlogPost {
-  id: ID!
-  author: User!
-  title: String!
-  content: String!
-}
-
-type Query {
-  author(id: ID!): User!
-  blogPost(id: ID!): BlogPost!
-}
-
-input UpdateBlogPostInput {
-  id: ID!
-  title: String
-  content: String
-}
-
-type Mutation {
-  updateBlogPost(input: UpdateBlogPostInput!): BlogPost!
-}
-```
-
-```js title="Resolvers"
-const resolvers = {
-  User: {
-    fullName: (parent, args, context, info) =>
-      `${parent.firstName} ${parent.lastName}`,
-    blogPosts: async (parent, args, context, info) => {
-      return await BlogPostModel.find({ authorId: parent.id })
-    }
-  },
-  BlogPost: {
-    author: (parent) => {
-      return await UserModel.findById(parent.authorId)
-    }
-  },
-  Query: {
-    author: async (parent, args, context, info) => {
-      const user = await UserModel.findById(args.id);
-      return user;
-    },
-    blogPost: async (parent, args, context, info) => {
-      const blogPost = await BlogPostModel.findById(
-        args.id
-      );
-      return blogPost;
-    },
-  },
-  Mutation: {
-    updateBlogPost: () => {
-      // Code to update a blog post
-    }
-  }
-};
-```
-
-</Step>
-
-</CodeSurferColumns>
-
----
-
-# TypeDefs + Resolvers = Schema
-
-- Enforce a strict contract
-
-- Consumer-focused
-
----
-
-# A whole bunch of other stuff
-
-- Enums, Directives, Scalars, Unions, Interfaces, Subscriptions
-
-- Authentication, Authorization, Cost Analysis, N + 1
-
----
-
-<TableOfContents activeStep={3} />
-
----
-
-<ClientAlternatives />
-
----
-
-# Apollo GraphQL
-
-- [Apollo Server](https://codesandbox.io/s/painless-development-with-graphql-luij2)
-
-- Apollo Client
-
-- [Apollo Graph Manager](https://www.apollographql.com/platform/)
-
----
-
-# Apollo Client
-
-- Centralized config
-
-- Requests
-
-- Components
-
-- Caching
-
----
-
-<MountingExample />
-
----
-
-<OnDemandExample />
-
----
-
-<MutationExample />
-
----
-
-<QueryAndMutationExample />
-
----
-
-# This is amazing
-
-<CodeSurferColumns>
-
-<Step>
-
-```js title="Component"
-// Component
-class Profile extends React.Component {
-  componentDidMount() {
-    this.props.fetchProfile();
-  }
-
-  render() {
-    // return JSX
-  }
-}
-
-// Select data from Redux
-const mapStateToProps = state => ({
-  profile: state.profile,
-});
-
-// Connect Action Creators to Redux
-const mapDispatchToProps = {
-  fetchProfile,
-};
-
-// Connect to Redux
-const ConnectedProfile = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Profile);
-
-export default ConnectedProfile;
-```
-
-```js title="Actions"
-// Redux Action Creators
-const fetchProfileRequest = () => ({
-  type: "FETCH_PROFILE_REQUEST",
-  payload: {},
-});
-
-const fetchProfileSuccess = ({ profile }) => ({
-  type: "FETCH_PROFILE_SUCCESS",
-  payload: { profile },
-});
-
-const fetchProfileFailure = ({ error }) => ({
-  type: "FETCH_PROFILE_ERROR",
-  payload: { error },
-});
-
-// Redux Action
-export const fetchProfile = ({ id }) => async dispatch => {
-  dispatch(fetchProfileRequest());
-  try {
-    const profile = await profileUtils.getProfile({ id });
-    fetchProfileSuccess({ profile });
-  } catch (error) {
-    fetchProfileFailure({ error });
-  }
-};
-```
-
-```js title="Reducer"
-// Initial state
-const initialState = {
-  error: null,
-  loading: false,
-  profile: null,
-};
-
-export default reducer = (state = initialState, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case "FETCH_PROFILE_REQUEST":
-      return {
-        ...state,
-        error: null,
-        loading: true,
-        profile: null,
-      };
-    case "FETCH_PROFILE_SUCCESS":
-      return {
-        ...state,
-        error: false,
-        loading: false,
-        profile: payload.profile,
-      };
-    case "FETCH_PROFILE_FAILURE":
-      return {
-        ...state,
-        error: payload.error,
-        loading: false,
-        profile: null,
-      };
-    default:
-      return state;
-  }
-};
-```
-
-```js title="Apollo + Hooks" subtitle="No overfetching, no state management, localized state"
-const template = gql`
-  query {
-    me {
-      firstName
-    }
-  }
-`;
-
-const { data, error, loading } = useQuery(template);
-```
-
-</Step>
-
-</CodeSurferColumns>
-
----
-
-# So much faster
-
-(Blog Posts with createdAt & views)
-
----
-
-<QueryAndMutationExample />
-
----
-
-# What do we have?
-
-- Strong contract
-
-- Documentation
-
-- Centralized config
-
-- No overfetching
-
-- _Automatic_ state management
-
----
-
-# What else?
-
-- The first time you do this, it's **really** hard
-
-- Bunch of extras to productionize an API
-
----
-
-# Thank you + Q&A
-
-<iframe
-  src="https://giphy.com/embed/IcGkqdUmYLFGE"
-  width="800"
-  height="500"
-  frameBorder="0"
-  class="giphy-embed"
-  allowFullScreen
-/>
+<Notes>
+</Notes>
 
 ---
 
