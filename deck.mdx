@@ -1,8 +1,6 @@
-import { Notes, Image, Split } from "mdx-deck";
 import {
   CodeSurfer,
   CodeSurferColumns,
-  Step,
 } from "code-surfer";
 import {
   vsDark,
@@ -13,15 +11,12 @@ import {
 import Author from "./slides/Author";
 import TableOfContents from "./slides/TableOfContents";
 
-import OneEndpoint from "./slides/OneEndpoint/";
-import MountingExample from "./slides/MountingExample";
-import MutationExample from "./slides/MutationExample/";
-import OnDemandExample from "./slides/OnDemandExample/";
-import ClientAlternatives from "./slides//ClientAlternatives/";
-import SimpleProfilePlaceholder from "./components/ui/SimpleProfilePlaceholder";
-import QueryAndMutationExample from "./slides/QueryAndMutationExample";
 import AST from './assets/images/AST.png'; // with import
 import JSFromAST from "./assets/images/JSFromAST.png";
+import Generated2 from "./assets/images/Generated2.png";
+import CompilerPhases from "./assets/images/CompilerPhases.jpg";
+import ErrorMessages from "./assets/images/ErrorMessages.png";
+import TypeInference from "./assets/images/TypeInference.png";
 
 export const theme = nightOwl;
 
@@ -415,9 +410,9 @@ and callNode = {
 }
 and varRefNode = {value: string}
 and exprNode =
-  | callNode
-  | integerNode
-  | varRefNode;
+  | CallNode(callNode)
+  | IntegerNode(integerNode)
+  | VarRefNode(varRefNode);
 
 type defNode = {
   name: string,
@@ -635,15 +630,227 @@ DefNode(
 
 ---
 
-
+## Our generate function will be highly recursive, just like the parser
 
 ---
 
-## Reason/OCaml Type system
+<CodeSurfer>
 
-- Full type coverage
-- Inference
-- Soundness 
+```reason title="Generate code for an expression"
+ let rec generateExpr = exprNode => {
+   switch (exprNode) {
+    | CallNode(callNode) =>
+      let name = callNode.name;
+      let argExprs = joinArgExprs(callNode.argExprs);
+      {j|$name ($argExprs)|j};
+    | IntegerNode(integerNode) => string_of_int(integerNode.value)
+    | VarRefNode(varRefNode) => varRefNode.value
+    };
+  };
+```
+
+```reason 3:6 title="Generate a function call"
+ let rec generateExpr = exprNode => {
+   switch (exprNode) {
+    | CallNode(callNode) =>
+      let name = callNode.name;
+      let argExprs = joinArgExprs(callNode.argExprs);
+      {j|$name ($argExprs)|j};
+    | IntegerNode(integerNode) => string_of_int(integerNode.value)
+    | VarRefNode(varRefNode) => varRefNode.value
+    };
+  };
+```
+
+```reason 7:8 title="Generate an integer or variable reference"
+ let rec generateExpr = exprNode => {
+   switch (exprNode) {
+    | CallNode(callNode) =>
+      let name = callNode.name;
+      let argExprs = joinArgExprs(callNode.argExprs);
+      {j|$name ($argExprs)|j};
+    | IntegerNode(integerNode) => string_of_int(integerNode.value)
+    | VarRefNode(varRefNode) => varRefNode.value
+    };
+  };
+```
+
+</CodeSurfer>
+
+---
+
+<CodeSurfer>
+
+```reason title="Main generator function"
+  let rec generate_ = node => {
+    switch (node) {
+    | DefNode(defNode) =>
+      let {name, argNames, body} = defNode;
+      let argNamesAsString = joinArgNames(argNames);
+      // recursively generate body
+      let bodyAsString = generate_(ExprNode(defNode.body));
+      {j|function $name($argNamesAsString) { return $bodyAsString }|j};
+    | ExprNode(exprNode) => generateExpr(exprNode)
+    };
+  };
+```
+
+```reason 8 title="Expression node"
+  let rec generate_ = node => {
+    switch (node) {
+    | DefNode(defNode) =>
+      let {name, argNames, body} = defNode;
+      let argNamesAsString = joinArgNames(argNames);
+      // recursively generate body
+      let bodyAsString = generate_(ExprNode(defNode.body));
+      {j|function $name($argNamesAsString) { return $bodyAsString }|j};
+    | ExprNode(exprNode) => generateExpr(exprNode)
+    };
+  };
+```
+
+```reason 3:7 title="Function definition node"
+  let rec generate_ = node => {
+    switch (node) {
+    | DefNode(defNode) =>
+      let {name, argNames, body} = defNode;
+      let argNamesAsString = joinArgNames(argNames);
+      // recursively generate body
+      let bodyAsString = generate_(ExprNode(defNode.body));
+      {j|function $name($argNamesAsString) { return $bodyAsString }|j};
+    | ExprNode(exprNode) => generateExpr(exprNode)
+    };
+  };
+```
+
+
+</CodeSurfer>
+
+---
+
+## Let's put it all together with the compiler
+
+---
+
+<CodeSurfer>
+
+```reason
+// Compiler.re
+
+let compile = program => {
+  program
+  ->Tokenizer.make
+  ->Parser.make
+  ->Generator.generate;
+};
+
+Js.log(compile("def f(x, y) add(x, y) end"));
+```
+
+```reason 3 title="Tokenize!"
+let compile = program => {
+  program
+  ->Tokenizer.make
+  ->Parser.make
+  ->Generator.generate;
+};
+
+Js.log(compile("def f(x, y) add(x, y) end"));
+```
+
+```reason 4 title="Parse!"
+let compile = program => {
+  program
+  ->Tokenizer.make
+  ->Parser.make
+  ->Generator.generate;
+};
+
+Js.log(compile("def f(x, y) add(x, y) end"));
+```
+
+```reason 5 title="Generate!"
+let compile = program => {
+  program
+  ->Tokenizer.make
+  ->Parser.make
+  ->Generator.generate;
+};
+
+Js.log(compile("def f(x, y) add(x, y) end"));
+```
+
+```reason 8 title="Compile!"
+let compile = program => {
+  program
+  ->Tokenizer.make
+  ->Parser.make
+  ->Generator.generate;
+};
+
+Js.log(compile("def f(x, y) add(x, y) end"));
+```
+
+</CodeSurfer>
+
+---
+
+
+## And that's our compiler!
+
+```reason
+compile("def f(x) 1 end");
+```
+
+<img src={JSFromAST} />
+
+---
+
+### Our mini-compiler also supports arbitrary nested expressions
+
+```reason
+compile("def f(x, y) add(x,add(x,y)) end")
+```
+
+<img src={Generated2} />
+
+---
+
+## Recap
+
+1. Structure of a compiler (Tokenizer -> Parser -> Generator)
+2. Features of Reason as a language
+3. Type system
+
+---
+
+## 1. Structure of a compiler (Tokenizer -> Parser -> Generator)
+
+<img width="500" height="700" src={CompilerPhases} />
+
+<Notes>
+1. Talk about where a type system would fit into the flow of a compiler
+</Notes>
+
+---
+
+## 2. Features of Reason as a language
+
+### My favorites:
+* Variants/Pattern matching: `type = This | That;`
+
+* Pipe-first operator: `->`
+
+* Module system: `Compiler.compile`
+
+---
+
+
+## 3. Reason/OCaml Type system
+
+Type Inferencing
+
+<img style={{ height: '30%' }} src={TypeInference}/>
 
 <Notes>
 Contrast this with JavaScript
@@ -651,6 +858,11 @@ Contrast this with JavaScript
 
 ---
 
+## 3. Reason/OCaml Type system cont'd
+
+Error Messages
+
+<img style={{ height: '30%' }} src={ErrorMessages}/>
 
 ---
 
