@@ -8,6 +8,8 @@ import {
   nightOwl,
 } from "@code-surfer/themes";
 
+import { Image } from "mdx-deck";
+
 import Author from "./slides/Author";
 import TableOfContents from "./slides/TableOfContents";
 
@@ -623,10 +625,8 @@ DefNode(
 
 ## Now we're going to generate JavaScript from our input AST
 
-<div class="flex flex-row">
-  <img src={AST} />
-  <img src={JSFromAST} />
-</div>
+<img style={{ height: '30%' }} src={AST} />
+<img style={{ height: '30%' }} src={JSFromAST} />
 
 ---
 
@@ -722,7 +722,6 @@ DefNode(
     };
   };
 ```
-
 
 </CodeSurfer>
 
@@ -870,13 +869,37 @@ Error Messages
 
 ---
 
+<Steps>
 
-## Core concepts of React
+### We've talked about Reason as a language, so what can we do with it?
+
+<div>
+<h2>
+<a href="https://reasonml.github.io/reason-react/">ReasonReact!</a>
+</h2>
+<Image size={100} src="https://cdn.auth0.com/blog/react-js/react.png" />
+</div>
+
+</Steps>
+
+---
+
+
+## Core concepts of React (from [Jordan Walke]() himself!)
+
+<Steps>
 
 1. Minimize application state
+
 2. Minimize side effects
 
+</Steps>
+
 <Notes>
+1. Reason, and FP languages in general, minimize state because you can't change
+state globally.
+2. Again, by definition, FP languages are mostly side-effect free.
+
 Jordan Walke did a talk, invented React and Reason etc.
 </Notes>
 
@@ -884,7 +907,7 @@ Jordan Walke did a talk, invented React and Reason etc.
 
 <CodeSurfer>
 
-```reason
+```reason title="Intro Example"
 [@react.component]
 let make = (~name) => {
   let (count, setCount) = React.useState(() => 0);
@@ -897,38 +920,293 @@ let make = (~name) => {
   </div>
 };
 ```
+
+```reason 2 title="Intro Example" subtitle="Named arguments (props)"
+[@react.component]
+let make = (~name) => {
+  let (count, setCount) = React.useState(() => 0);
+
+  <div>
+    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
+    <button onClick={_ => setCount(_ => count + 1)}>
+      {React.string("Click me")}
+    </button>
+  </div>
+};
+```
+
+```reason 3 title="Intro Example" subtitle="useState hook"
+[@react.component]
+let make = (~name) => {
+  let (count, setCount) = React.useState(() => 0);
+
+  <div>
+    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
+    <button onClick={_ => setCount(_ => count + 1)}>
+      {React.string("Click me")}
+    </button>
+  </div>
+};
+```
+
+```reason 6 title="Intro Example" subtitle="Explicitly typed elements"
+[@react.component]
+let make = (~name) => {
+  let (count, setCount) = React.useState(() => 0);
+
+  <div>
+    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
+    <button onClick={_ => setCount(_ => count + 1)}>
+      {React.string("Click me")}
+    </button>
+  </div>
+};
+```
+
+```reason 1 title="Intro Example" subtitle="React decorator"
+[@react.component]
+let make = (~name) => {
+  let (count, setCount) = React.useState(() => 0);
+
+  <div>
+    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
+    <button onClick={_ => setCount(_ => count + 1)}>
+      {React.string("Click me")}
+    </button>
+  </div>
+};
+```
+
 </CodeSurfer>
 
 <Notes>
+Main differences between this and JS implementation: 
+* Named arguments for props
+* Decorator attribute that tells ReasonReact you want to compile this into a
+function that takes a JS object as props which is how React works
+* React.string wrapper, conversion to an int
 </Notes>
 
+---
 
-## ReasonReact
+## Main practical benefits of Reason + React
+
+* Types - ease of refactoring
+
+* Explicit handling of elements
+
+* First Class Language Tools (immutability, switch statements)
+
+<Notes>
+
+</Notes>
+
+---
+
 
 <CodeSurfer>
 
-```reason
-[@react.component]
-let make = (~name) => {
-  let (count, setCount) = React.useState(() => 0);
+```reason title="Example - ReasonReactRouter"
+// www.hello.com/book/10/edit?name=Jane#author
 
-  <div>
-    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
-    <button onClick={_ => setCount(_ => count + 1)}>
-      {React.string("Click me")}
-    </button>
-  </div>
+let url = ReasonReactRouter.useUrl();
+switch (url.path) {
+| ["book", id, "edit"] => handleBookEdit(id)
+| ["book", id] => getBook(id)
+| ["book", id, _] => noSuchBookOperation()
+| [] => showMainPage()
+| ["shop"] | ["shop", "index"] => showShoppingPage()
+| ["shop", ...rest] =>
+    /* e.g. "shop/cart/10", but let "cart/10" be handled by another function */
+  nestedMatch(rest)
+| _ => showNotFoundPage()
 };
+}
+
 ```
+
+```reason 1:5 title="Example - ReasonReactRouter"
+// www.hello.com/book/10/edit?name=Jane#author
+
+let url = ReasonReactRouter.useUrl();
+switch (url.path) {
+| ["book", id, "edit"] => handleBookEdit(id)
+| ["book", id] => getBook(id)
+| ["book", id, _] => noSuchBookOperation()
+| [] => showMainPage()
+| ["shop"] | ["shop", "index"] => showShoppingPage()
+| ["shop", ...rest] =>
+    /* e.g. "shop/cart/10", but let "cart/10" be handled by another function */
+  nestedMatch(rest)
+| _ => showNotFoundPage()
+};
+}
+
+```
+
 </CodeSurfer>
 
 <Notes>
+The entire implementation is around 20 lines!
 </Notes>
+
+---
+
+<CodeSurfer>
+
+```reason title="Another Example - Apollo"
+open ApolloHooks
+
+module UserQuery = [%graphql {|
+  query UserQuery {
+    currentUser {
+      name
+    }
+  }
+|}];
+
+[@react.component]
+let make = () => {
+  /* Both variant and records available */
+  let (simple, _full) = useQuery(UserQuery.definition);
+
+  <div>
+  {
+    switch(simple) {
+      | Loading => <p>{React.string("Loading...")}</p>
+      | Data(data) =>
+        <p>{React.string(data##currentUser##name)}</p>
+      | NoData
+      | Error(_) => <p>{React.string("Get off my lawn!")}</p>
+    }
+  }
+  </div>
+}
+```
+
+```reason 3:9 title="Another Example - Apollo" subtitle="Fully type GraphQL queries!"
+open ApolloHooks
+
+module UserQuery = [%graphql {|
+  query UserQuery {
+    currentUser {
+      name
+    }
+  }
+|}];
+
+[@react.component]
+let make = () => {
+  /* Both variant and records available */
+  let (simple, _full) = useQuery(UserQuery.definition);
+
+  <div>
+  {
+    switch(simple) {
+      | Loading => <p>{React.string("Loading...")}</p>
+      | Data(data) =>
+        <p>{React.string(data##currentUser##name)}</p>
+      | NoData
+      | Error(_) => <p>{React.string("Get off my lawn!")}</p>
+    }
+  }
+  </div>
+}
+```
+
+```reason 11:30 title="Another Example - Apollo" subtitle="Our component"
+open ApolloHooks
+
+module UserQuery = [%graphql {|
+  query UserQuery {
+    currentUser {
+      name
+    }
+  }
+|}];
+
+[@react.component]
+let make = () => {
+  /* Both variant and records available */
+  let (simple, _full) = useQuery(UserQuery.definition);
+
+  <div>
+  {
+    switch(simple) {
+      | Loading => <p>{React.string("Loading...")}</p>
+      | Data(data) =>
+        <p>{React.string(data##currentUser##name)}</p>
+      | NoData
+      | Error(_) => <p>{React.string("Get off my lawn!")}</p>
+    }
+  }
+  </div>
+}
+```
+
+```reason 18:24 title="Another Example - Apollo" subtitle="Look at how elegant this is!"
+open ApolloHooks
+
+module UserQuery = [%graphql {|
+  query UserQuery {
+    currentUser {
+      name
+    }
+  }
+|}];
+
+[@react.component]
+let make = () => {
+  /* Both variant and records available */
+  let (simple, _full) = useQuery(UserQuery.definition);
+
+  <div>
+  {
+    switch(simple) {
+      | Loading => <p>{React.string("Loading...")}</p>
+      | Data(data) =>
+        <p>{React.string(data##currentUser##name)}</p>
+      | NoData
+      | Error(_) => <p>{React.string("Get off my lawn!")}</p>
+    }
+  }
+  </div>
+}
+```
+
+</CodeSurfer>
+
+---
+
+## So what did we (hopefully) learn? 
+
+<Steps>
+
+* Functional programming concepts
+
+* Deep dive into the language by writing a mini-compiler
+
+* Examples of how to use Reason + React to build powerful and extensible web apps
+
+</Steps>
+
+<Notes>
+1. Functions as first-class citizens, pure functions, immutability
+2. Lexer->Parser->CodeGenerator
+3. Mention ReasonReactNative
+</Notes>
+
+---
+
+# Thank you + Q&A
 
 ---
 
 # Sources
 
 - https://thecodeboss.dev/2016/12/core-functional-programming-concepts/
+- https://github.com/masiamj/painless-development-with-graphql
+- https://www.youtube.com/watch?v=5fG_lyNuEAw&list=PLDLhOs9UV9w9ms-kFEtR3-LMM3HU8QheA
+- https://reasonml.github.io/
 
 
