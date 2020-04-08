@@ -466,11 +466,15 @@ Tokens -> [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_t
 
 ## Abstract Syntax Tree - Integer Node
 
+<Steps>
+
 How do we represent the integer literal 1?
 
 ```
 VALUE: 1
 ```
+
+</Steps>
 
 <Notes>
 What is the minimum info needed to represent an integer?
@@ -483,6 +487,8 @@ values is obvious; they also do not change in value.
 
 ## Abstract Syntax Tree - Definition Node
 
+<Steps>
+
 How about the definition `def f(...) ... end`
 
 ```
@@ -492,6 +498,8 @@ DEF
   BODY:
    ... 
 ```
+
+</Steps>
 
 ---
 
@@ -520,7 +528,7 @@ type node =
   | Expr(exprNode);
 ```
 
-```reason 1:16 title="Types"
+```reason 1:16 title="Types" subtitle="Internal AST nodes"
 type integerNode = {value: int}
 and callNode = {
   name: string,
@@ -543,7 +551,7 @@ type node =
   | Expr(exprNode);
 ```
 
-```reason 17:20 title="Types"
+```reason 17:20 title="Types" subtitle="Top level AST nodes"
 type integerNode = {value: int}
 and callNode = {
   name: string,
@@ -595,7 +603,7 @@ DEF
 ```reason title="How do we parse integers?"
 let parseInteger = tokens => {
   let (integerToken, newTokens) = consume(tokens, INT);
-  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  let integerNode = {value: int_of_string(integerToken.value)};
   (ExprNode(integerNode), newTokens);
 };
 ```
@@ -603,7 +611,7 @@ let parseInteger = tokens => {
 ```reason 2 title="Consume the INT token"
 let parseInteger = tokens => {
   let (integerToken, newTokens) = consume(tokens, INT);
-  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  let integerNode = {value: int_of_string(integerToken.value)};
   (ExprNode(integerNode), newTokens);
 };
 ```
@@ -611,7 +619,7 @@ let parseInteger = tokens => {
 ```reason 3 title="Build the integerNode"
 let parseInteger = tokens => {
   let (integerToken, newTokens) = consume(tokens, INT);
-  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  let integerNode = {value: int_of_string(integerToken.value)};
   (ExprNode(integerNode), newTokens);
 };
 ```
@@ -619,7 +627,7 @@ let parseInteger = tokens => {
 ```reason 4 title="Construct an ExprNode"
 let parseInteger = tokens => {
   let (integerToken, newTokens) = consume(tokens, INT);
-  let integerNode: integerNode  = {value: int_of_string(integerToken.value)};
+  let integerNode = {value: int_of_string(integerToken.value)};
   (ExprNode(integerNode), newTokens);
 };
 ```
@@ -661,15 +669,12 @@ let make = tokens => {
       let (parsedDef, remainingTokens) = parseDef(tokens);
       Array.concat([[|parsedDef|], parse(remainingTokens)]);
     };
-    // Start with parseDef
-    let (parsedDef, _) = parseDef(tokens);
-    [|parsedDef|];
   };
   parse(tokens);
 };
 ```
 
-```reason 3:13 title="Parser" subtitle="Recursive parse function"
+```reason 3:10 title="Parser" subtitle="Recursive parse function"
 // Will return a tree
 let make = tokens => {
   let rec parse = tokens => {
@@ -679,15 +684,12 @@ let make = tokens => {
       let (parsedDef, remainingTokens) = parseDef(tokens);
       Array.concat([[|parsedDef|], parse(remainingTokens)]);
     };
-    // Start with parseDef
-    let (parsedDef, _) = parseDef(tokens);
-    [|parsedDef|];
   };
   parse(tokens);
 };
 ```
 
-```reason 14 title="Parser" subtitle="Start parsing!"
+```reason 10 title="Parser" subtitle="Start parsing!"
 // Will return a tree
 let make = tokens => {
   let rec parse = tokens => {
@@ -697,9 +699,6 @@ let make = tokens => {
       let (parsedDef, remainingTokens) = parseDef(tokens);
       Array.concat([[|parsedDef|], parse(remainingTokens)]);
     };
-    // Start with parseDef
-    let (parsedDef, _) = parseDef(tokens);
-    [|parsedDef|];
   };
   parse(tokens);
 };
