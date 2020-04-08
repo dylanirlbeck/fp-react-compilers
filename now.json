@@ -1,6 +1,6 @@
 {
-  "name": "painless-development-with-graphql",
-  "alias": "painless.now.sh",
+  "name": "fp-react-compilers-reasonml",
+  "alias": "fp-react-compilers-reasonml.now.sh",
   "builds": [
     {
       "src": "package.json",

@@ -191,13 +191,9 @@ Infer - Static analyzer for Java, C++, C, and Objective-C (for mobile apps)
 
 3. **Code Generation** - Generate output code from the AST
 
-4. TODO throw in an image here instead (or some animations)
-
 ---
 
 ## Define your frontend and backend (and sometimes your type system)
-
-Our Compiler:
 
 - Frontend: Mini-C
 
@@ -222,7 +218,8 @@ def f() 1 end
 
 <Steps>
 
-How do we represent these tokens?
+What are our "tokens"?
+
 ```
 def
 f
@@ -232,8 +229,6 @@ f
 end
 ```
 
-We use what's called a [variant](https://reasonml.github.io/docs/en/variant#docsNav)
-
 </Steps>
 
 ---
@@ -241,17 +236,18 @@ We use what's called a [variant](https://reasonml.github.io/docs/en/variant#docs
 
 <CodeSurfer>
 
-```reason title="Variant"
+```reason title="How do we represent these tokens?" subtitle="We use what's called a variant"
 // Tokenizer.re
 
+// This is a variant
 type token =
-  | DEF // def
-  | IDENT // f
-  | OPAREN // (
-  | CPAREN // )
-  | END // end
-  | INT // 2,3,etc
-  | COMMA; // ,
+  | DEF     // def
+  | IDENT   // f
+  | OPAREN  // (
+  | CPAREN  // )
+  | END     // end
+  | INT     // 2,3,etc
+  | COMMA;  // ,
 ```
 
 </CodeSurfer>
@@ -262,23 +258,25 @@ Smallest pieces that are meaningful
 
 ---
 
-How are we going to consume our input program? [Regular expressions](https://reasonml.github.io/docs/en/regular-expression#docsNav).
+<Steps>
+
+How are we going to consume our input program?
+
+[Regular expressions](https://reasonml.github.io/docs/en/regular-expression#docsNav).
+
+</Steps>
 
 ---
 
 <CodeSurfer>
 
-```reason
+```reason title="Regular Expressions"
 //Tokenizer.re
 
+// This is a record
 type tokenType = {
   token,
   regExp: Js.Re.t,
-};
-
-type tokenValue = {
-  token,
-  value: string,
 };
 
 // ^ means match beginning of input
@@ -302,15 +300,11 @@ let tokenTypes: array(tokenType) = [|
 |];
 ```
 
-```reason 1:9
+```reason 1:4 title="Regular expressions" subtitle="Record!"
+// This is a record
 type tokenType = {
   token,
   regExp: Js.Re.t,
-};
-
-type tokenValue = {
-  token,
-  value: string,
 };
 
 // ^ means match beginning of input
@@ -334,16 +328,11 @@ let tokenTypes: array(tokenType) = [|
 |];
 ```
 
-```reason 10:32
-// These are records
+```reason 7:25 title="Regular Expressions" subtitle="Construct the regexps"
+// This is a record
 type tokenType = {
   token,
   regExp: Js.Re.t,
-};
-
-type tokenValue = {
-  token,
-  value: string,
 };
 
 // ^ means match beginning of input
