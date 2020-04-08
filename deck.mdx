@@ -8,7 +8,7 @@ import {
   nightOwl,
 } from "@code-surfer/themes";
 
-import { Image } from "mdx-deck";
+import { Image, Footer } from "mdx-deck";
 
 import Author from "./slides/Author";
 import TableOfContents from "./slides/TableOfContents";
@@ -20,11 +20,19 @@ import Generated2 from "./assets/images/Generated2.png";
 import CompilerPhases from "./assets/images/CompilerPhases.jpg";
 import ErrorMessages from "./assets/images/ErrorMessages.png";
 import TypeInference from "./assets/images/TypeInference.png";
-import { Row } from "./components/ui/Common"
+import { Row } from "./components/ui/Common";
 
 export const theme = nightOwl;
 
-# Functional Programming, React, and Compilers in ReasonML
+<Footer>
+
+Made with :heart: by @dylanirlbeck
+
+</Footer>
+
+## Functional Programming, React, and Compilers in ReasonML
+
+Chicago ReasonML Meetup, April 2020
 
 ---
 
@@ -34,11 +42,34 @@ export const theme = nightOwl;
 
 ## Why I'm doing this talk
 
-1. I love functional programming, and want to share my experience from the world
-of academia
+* I :heart: functional programming
 
-2. ReasonML has made me a better developer, and I'd like to help other people
-get started building cool things with it.
+* ReasonML has made me a better developer
+
+<Notes>
+1. Want to share my experience from the world of academia
+2. I want to help other people just get started building cool things with it
+</Notes>
+
+---
+
+## What I hope you take away
+
+* An understanding of the core concepts behind functional programming
+
+* Ideas of what you might want to build in Reason 
+
+<Notes>
+1. The concepts exist beyond the language (and how they're implemented in
+ReasonML)
+2. We'll dive into some examples...
+</Notes>
+
+---
+
+## ReasonML
+
+<Image size={200} src={"https://avatars0.githubusercontent.com/u/20414525?s=280&v=4"} />
 
 ---
 
@@ -95,11 +126,34 @@ let doubledArr = Array.map(double, arr); // [2, 4, 6]
 
 <CodeSurfer>
 
-```reason title="Functions are first-class citizens cont'd" subtitle="Partial Application"
+```reason 1 title="Functions are first-class citizens cont'd" subtitle="Partial Application"
 let add = (x, y) => x + y;
+
 let addFive = add(5);
-let eleven = addFive(6);
-let twelve = addFive(7);
+
+let eleven = addFive(6); // 11
+
+let twelve = addFive(7); // 12
+```
+
+```reason 3 title="Functions are first-class citizens cont'd" subtitle="Partial Application"
+let add = (x, y) => x + y;
+
+let addFive = add(5);
+
+let eleven = addFive(6); // 11
+
+let twelve = addFive(7); // 12
+```
+
+```reason 5:7 title="Functions are first-class citizens cont'd" subtitle="Partial Application"
+let add = (x, y) => x + y;
+
+let addFive = add(5);
+
+let eleven = addFive(6); // 11
+
+let twelve = addFive(7); // 12
 ```
 
 </CodeSurfer>
