@@ -12,6 +12,7 @@ import { Image } from "mdx-deck";
 
 import Author from "./slides/Author";
 import TableOfContents from "./slides/TableOfContents";
+import WhyCompiler from "./slides/WhyCompiler";
 
 import AST from './assets/images/AST.png'; // with import
 import JSFromAST from "./assets/images/JSFromAST.png";
@@ -19,6 +20,7 @@ import Generated2 from "./assets/images/Generated2.png";
 import CompilerPhases from "./assets/images/CompilerPhases.jpg";
 import ErrorMessages from "./assets/images/ErrorMessages.png";
 import TypeInference from "./assets/images/TypeInference.png";
+import { Row } from "./components/ui/Common"
 
 export const theme = nightOwl;
 
@@ -46,14 +48,13 @@ get started building cool things with it.
 
 - "Mostly" functional (OCaml)
 
-- 100% type coverage, inference, and soundness
+- 100% type coverage, powerful inference
 
 <Notes>
 1. Talk about what OCaml (why is it used in compilers)
 
 Type coverage - Every line of code
-Soundness - Once it compiles, the types are guaranteed to be accurate (TODO look
-more into this)
+Soundness - Once it compiles, the types are guaranteed to be accurate
 
 </Notes>
 
@@ -92,11 +93,9 @@ let doubledArr = Array.map(double, arr); // [2, 4, 6]
 
 ---
 
-## Functions are first-class citizens cont'd
-
 <CodeSurfer>
 
-```reason
+```reason title="Functions are first-class citizens cont'd" subtitle="Partial Application"
 let add = (x, y) => x + y;
 let addFive = add(5);
 let eleven = addFive(6);
@@ -106,7 +105,15 @@ let twelve = addFive(7);
 </CodeSurfer>
 
 <Notes>
-Currying - TODO get a definition
+Currying and partial application are also conflated
+
+Partial Application: Fixing a number of arguments to a function, producing
+another function of a smaller arity
+
+Currying - Technique of translating the evaluation of a function that takes
+multiple arguments into evaluating a sequence of functions, each with a single
+argument
+
 
 add above is really syntax sugar for let add = (x) => (y) => x + y;
 </Notes>
@@ -142,11 +149,9 @@ Here we're trying to change the state of a variable..
 
 ---
 
-## Immutable data
-
 <CodeSurfer>
 
-```reason
+```reason title="Immutable data" subtitle="How are variables defined in mathematics?"
 let x = 5;
 
 // Rest of your program
@@ -168,14 +173,12 @@ mathematics).
 
 ---
 
-## Why write a compiler?
-
-- Show off the core features of Reason
-- It's what Reason/OCaml is especially good at
-- TODO throw some pictures of compilers/software written in OCaml
+<WhyCompiler />
 
 <Notes>
-Hack, Haxe, Flow, Infer, Coq, WebAssembly interpreter
+Flow - Static type checker for JavaScript
+Hack compiler - Hack extends PHP with static types
+Infer - Static analyzer for Java, C++, C, and Objective-C (for mobile apps)
 </Notes>
 
 ---
@@ -1083,7 +1086,7 @@ The entire implementation is around 20 lines!
 ```reason title="Another Example - Apollo"
 open ApolloHooks
 
-module UserQuery = [%graphql {|
+module UserQuery = [%GraphQL {|
   query UserQuery {
     currentUser {
       name
@@ -1113,7 +1116,7 @@ let make = () => {
 ```reason 3:9 title="Another Example - Apollo" subtitle="Fully type GraphQL queries!"
 open ApolloHooks
 
-module UserQuery = [%graphql {|
+module UserQuery = [%GraphQL {|
   query UserQuery {
     currentUser {
       name
@@ -1143,7 +1146,7 @@ let make = () => {
 ```reason 11:30 title="Another Example - Apollo" subtitle="Our component"
 open ApolloHooks
 
-module UserQuery = [%graphql {|
+module UserQuery = [%GraphQL {|
   query UserQuery {
     currentUser {
       name
@@ -1173,7 +1176,7 @@ let make = () => {
 ```reason 18:24 title="Another Example - Apollo" subtitle="Look at how elegant this is!"
 open ApolloHooks
 
-module UserQuery = [%graphql {|
+module UserQuery = [%GraphQL {|
   query UserQuery {
     currentUser {
       name
@@ -1231,8 +1234,5 @@ let make = () => {
 # Sources
 
 - https://thecodeboss.dev/2016/12/core-functional-programming-concepts/
-- https://github.com/masiamj/painless-development-with-graphql
 - https://www.youtube.com/watch?v=5fG_lyNuEAw&list=PLDLhOs9UV9w9ms-kFEtR3-LMM3HU8QheA
 - https://reasonml.github.io/
-
-
