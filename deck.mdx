@@ -237,8 +237,6 @@ end
 <CodeSurfer>
 
 ```reason title="How do we represent these tokens?" subtitle="We use what's called a variant"
-// Tokenizer.re
-
 // This is a variant
 type token =
   | DEF     // def
@@ -280,13 +278,13 @@ type tokenType = {
 };
 
 // ^ means match beginning of input
-let defToken = {token: `DEF, regExp: [%re "/^(\\bdef\\b)/"]};
-let endToken = {token: `END, regExp: [%re "/^(\\bend\\b)/"]};
-let identToken = {token: `IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
-let intToken = {token: `INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
-let oparenToken = {token: `OPAREN, regExp: [%re "/^(\\()/"]};
-let cparenToken = {token: `CPAREN, regExp: [%re "/^(\\))/"]};
-let commaToken = {token: `COMMA, regExp: [%re "/^(\\,)/"]};
+let defToken = {token: DEF, regExp: [%re "/^(\\bdef\\b)/"]};
+let endToken = {token: END, regExp: [%re "/^(\\bend\\b)/"]};
+let identToken = {token: IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
+let intToken = {token: INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
+let oparenToken = {token: OPAREN, regExp: [%re "/^(\\()/"]};
+let cparenToken = {token: CPAREN, regExp: [%re "/^(\\))/"]};
+let commaToken = {token: COMMA, regExp: [%re "/^(\\,)/"]};
 
 // These are in a necessary order, i.e. don't want def to be an identifier
 let tokenTypes: array(tokenType) = [|
@@ -308,13 +306,13 @@ type tokenType = {
 };
 
 // ^ means match beginning of input
-let defToken = {token: `DEF, regExp: [%re "/^(\\bdef\\b)/"]};
-let endToken = {token: `END, regExp: [%re "/^(\\bend\\b)/"]};
-let identToken = {token: `IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
-let intToken = {token: `INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
-let oparenToken = {token: `OPAREN, regExp: [%re "/^(\\()/"]};
-let cparenToken = {token: `CPAREN, regExp: [%re "/^(\\))/"]};
-let commaToken = {token: `COMMA, regExp: [%re "/^(\\,)/"]};
+let defToken = {token: DEF, regExp: [%re "/^(\\bdef\\b)/"]};
+let endToken = {token: END, regExp: [%re "/^(\\bend\\b)/"]};
+let identToken = {token: IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
+let intToken = {token: INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
+let oparenToken = {token: OPAREN, regExp: [%re "/^(\\()/"]};
+let cparenToken = {token: CPAREN, regExp: [%re "/^(\\))/"]};
+let commaToken = {token: COMMA, regExp: [%re "/^(\\,)/"]};
 
 // These are in a necessary order, i.e. don't want def to be an identifier
 let tokenTypes: array(tokenType) = [|
@@ -336,13 +334,13 @@ type tokenType = {
 };
 
 // ^ means match beginning of input
-let defToken = {token: `DEF, regExp: [%re "/^(\\bdef\\b)/"]};
-let endToken = {token: `END, regExp: [%re "/^(\\bend\\b)/"]};
-let identToken = {token: `IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
-let intToken = {token: `INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
-let oparenToken = {token: `OPAREN, regExp: [%re "/^(\\()/"]};
-let cparenToken = {token: `CPAREN, regExp: [%re "/^(\\))/"]};
-let commaToken = {token: `COMMA, regExp: [%re "/^(\\,)/"]};
+let defToken = {token: DEF, regExp: [%re "/^(\\bdef\\b)/"]};
+let endToken = {token: END, regExp: [%re "/^(\\bend\\b)/"]};
+let identToken = {token: IDENT, regExp: [%re "/^(\\b[a-zA-Z]+\\b)/"]};
+let intToken = {token: INT, regExp: [%re "/^(\\b[0-9]+\\b)/"]};
+let oparenToken = {token: OPAREN, regExp: [%re "/^(\\()/"]};
+let cparenToken = {token: CPAREN, regExp: [%re "/^(\\))/"]};
+let commaToken = {token: COMMA, regExp: [%re "/^(\\,)/"]};
 
 // These are in a necessary order, i.e. don't want def to be an identifier
 let tokenTypes: array(tokenType) = [|
@@ -379,8 +377,7 @@ Js.log(tokens);
 
 <CodeSurfer>
 
-```json title="Tokens!"
-//TODO CHANGE THIS LIST SCREENSHOT
+```json title="Tokens!" subtitle="The integers are just the JS representation of the variants"
 [
   { token: 3397029, value: 'def' },
   { token: 895974096, value: 'f' },
@@ -391,14 +388,7 @@ Js.log(tokens);
   { token: -934581835, value: ',' },
   { token: 895974096, value: 'z' },
   { token: 86829255, value: ')' },
-  { token: 895974096, value: 'g' },
-  { token: -780845765, value: '(' },
-  { token: 895974096, value: 'x' },
-  { token: -934581835, value: ',' },
-  { token: 895974096, value: 'y' },
-  { token: -934581835, value: ',' },
   { token: 3647695, value: '1' },
-  { token: 86829255, value: ')' },
   { token: 3448763, value: 'end' }
 ]
 ```
@@ -413,10 +403,38 @@ Js.log(tokens);
 
 ## On to the parser
 
-The parser will analyze our sequence of tokens and create a tree representing
-the input program (also known as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree)).
+Tokens -> [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
-TODO put an image of a AST here
+---
+
+## Abstract Syntax Tree - Integer Node
+
+How do we represent the integer literal 1?
+
+```
+VALUE: 1
+```
+
+<Notes>
+What is the minimum info needed to represent an integer?
+
+Literals (or constants) are the values we write in a conventional form whose
+values is obvious; they also do not change in value.
+</Notes>
+
+---
+
+## Abstract Syntax Tree - Definition Node
+
+How about the definition `def f(...) ... end`
+
+```
+DEF
+  NAME: "f"
+  ARGS: [...]
+  BODY:
+   ... 
+```
 
 ---
 
@@ -508,7 +526,9 @@ DEF
   NAME: "f"
   ARGS: ["x"]
   BODY:
-    INTEGER_LITERAL: "1"
+    INTEGER_LITERAL
+      VALUE: 1
+      
 ```
 
 ---
@@ -556,7 +576,7 @@ let parseInteger = tokens => {
 
 ```reason title="How do we parse expressions?"
 let parseExpr = tokens =>
-  if (peek(tokens, `INT, ())) {
+  if (peek(tokens, INT, ())) {
     parseInteger(tokens);
   } else {
     parseCall(tokens);
@@ -576,8 +596,14 @@ let parseExpr = tokens =>
 
 ```reason title="Parser"
 // Will return a tree
-let make = (tokens: array(tokenValue)) => {
+let make = tokens => {
   let rec parse = tokens => {
+    switch (Array.length(tokens)) {
+    | 0 => [||]
+    | _ =>
+      let (parsedDef, remainingTokens) = parseDef(tokens);
+      Array.concat([[|parsedDef|], parse(remainingTokens)]);
+    };
     // Start with parseDef
     let (parsedDef, _) = parseDef(tokens);
     [|parsedDef|];
@@ -586,10 +612,16 @@ let make = (tokens: array(tokenValue)) => {
 };
 ```
 
-```reason 3:7 title="Recursive parse function"
+```reason 3:13 title="Parser" subtitle="Recursive parse function"
 // Will return a tree
-let make = (tokens: array(tokenValue)) => {
+let make = tokens => {
   let rec parse = tokens => {
+    switch (Array.length(tokens)) {
+    | 0 => [||]
+    | _ =>
+      let (parsedDef, remainingTokens) = parseDef(tokens);
+      Array.concat([[|parsedDef|], parse(remainingTokens)]);
+    };
     // Start with parseDef
     let (parsedDef, _) = parseDef(tokens);
     [|parsedDef|];
@@ -598,10 +630,16 @@ let make = (tokens: array(tokenValue)) => {
 };
 ```
 
-```reason 8 title="Call the recursive function and..."
+```reason 14 title="Parser" subtitle="Start parsing!"
 // Will return a tree
-let make = (tokens: array(tokenValue)) => {
+let make = tokens => {
   let rec parse = tokens => {
+    switch (Array.length(tokens)) {
+    | 0 => [||]
+    | _ =>
+      let (parsedDef, remainingTokens) = parseDef(tokens);
+      Array.concat([[|parsedDef|], parse(remainingTokens)]);
+    };
     // Start with parseDef
     let (parsedDef, _) = parseDef(tokens);
     [|parsedDef|];
@@ -627,9 +665,11 @@ DefNode(
     name: "f"
     argNames: "x"
     body: ExprNode(
-      {
-        value: 1        
-      }
+        IntegerNode(
+        {
+          value: 1        
+        }
+      )
     )
   } 
 )
@@ -758,10 +798,10 @@ let compile = program => {
   program
   ->Tokenizer.make
   ->Parser.make
-  ->Generator.generate;
+  ->Generator.make;
 };
 
-Js.log(compile("def f(x, y) add(x, y) end"));
+compile("def f(x) 1 end");
 ```
 
 ```reason 3 title="Tokenize!"
@@ -769,10 +809,10 @@ let compile = program => {
   program
   ->Tokenizer.make
   ->Parser.make
-  ->Generator.generate;
+  ->Generator.make;
 };
 
-Js.log(compile("def f(x, y) add(x, y) end"));
+compile("def f(x, y) add(x, y) end");
 ```
 
 ```reason 4 title="Parse!"
@@ -780,10 +820,10 @@ let compile = program => {
   program
   ->Tokenizer.make
   ->Parser.make
-  ->Generator.generate;
+  ->Generator.make;
 };
 
-Js.log(compile("def f(x, y) add(x, y) end"));
+compile("def f(x, y) add(x, y) end");
 ```
 
 ```reason 5 title="Generate!"
@@ -791,10 +831,10 @@ let compile = program => {
   program
   ->Tokenizer.make
   ->Parser.make
-  ->Generator.generate;
+  ->Generator.make;
 };
 
-Js.log(compile("def f(x, y) add(x, y) end"));
+compile("def f(x, y) add(x, y) end");
 ```
 
 ```reason 8 title="Compile!"
@@ -835,10 +875,6 @@ compile("def f(x, y) add(x,add(x,y)) end")
 
 ## Recap
 
-1. Structure of a compiler (Tokenizer -> Parser -> Generator)
-2. Features of Reason as a language
-3. Type system
-
 ---
 
 ## 1. Structure of a compiler (Tokenizer -> Parser -> Generator)
@@ -853,12 +889,11 @@ compile("def f(x, y) add(x,add(x,y)) end")
 
 ## 2. Features of Reason as a language
 
-### My favorites:
-* Variants/Pattern matching: `type = This | That;`
+* Variants/Pattern matching: `type something = This | That;`
 
-* Pipe-first operator: `->`
+* Records: `type somethingElse = {value: int, name: string}` 
 
-* Module system: `Compiler.compile`
+* Type Inferencing
 
 ---
 
@@ -867,7 +902,7 @@ compile("def f(x, y) add(x,add(x,y)) end")
 
 Type Inferencing
 
-<img style={{ height: '30%' }} src={TypeInference}/>
+<img style={{ height: '40%' }} src={TypeInference}/>
 
 <Notes>
 Contrast this with JavaScript
@@ -879,7 +914,7 @@ Contrast this with JavaScript
 
 Error Messages
 
-<img style={{ height: '30%' }} src={ErrorMessages}/>
+<img style={{ height: '40%' }} src={ErrorMessages}/>
 
 ---
 
@@ -1011,12 +1046,14 @@ function that takes a JS object as props which is how React works
 
 * Types - ease of refactoring
 
-* Explicit handling of elements
+* Explicit handling of elements `React.string("hello")`
 
 * First Class Language Tools (immutability, switch statements)
 
 <Notes>
-
+1. Refactoring - this comes from experience
+2. This is a nice sanity check
+3. Again, minimize application state, switches help for rendering different HTML
 </Notes>
 
 ---
@@ -1075,7 +1112,7 @@ The entire implementation is around 20 lines!
 ```reason title="Another Example - Apollo"
 open ApolloHooks
 
-module UserQuery = [%GraphQL {|
+module UserQuery = [%graphql {|
   query UserQuery {
     currentUser {
       name
@@ -1102,10 +1139,10 @@ let make = () => {
 }
 ```
 
-```reason 3:9 title="Another Example - Apollo" subtitle="Fully type GraphQL queries!"
+```reason 3:9 title="Another Example - Apollo" subtitle="Fully typed GraphQL queries!"
 open ApolloHooks
 
-module UserQuery = [%GraphQL {|
+module UserQuery = [%graphql {|
   query UserQuery {
     currentUser {
       name
@@ -1132,10 +1169,10 @@ let make = () => {
 }
 ```
 
-```reason 11:30 title="Another Example - Apollo" subtitle="Our component"
+```reason 11:30 title="Another Example - Apollo" subtitle="Render a different component easily"
 open ApolloHooks
 
-module UserQuery = [%GraphQL {|
+module UserQuery = [%graphql {|
   query UserQuery {
     currentUser {
       name
@@ -1165,7 +1202,7 @@ let make = () => {
 ```reason 18:24 title="Another Example - Apollo" subtitle="Look at how elegant this is!"
 open ApolloHooks
 
-module UserQuery = [%GraphQL {|
+module UserQuery = [%graphql {|
   query UserQuery {
     currentUser {
       name
