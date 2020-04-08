@@ -79,7 +79,7 @@ ReasonML)
 
 - "Mostly" functional (OCaml)
 
-- 100% type coverage, powerful inference
+- 100% type coverage, powerful type inference
 
 <Notes>
 It's also really, really fast.
@@ -99,7 +99,7 @@ Soundness - Once it compiles, the types are guaranteed to be accurate
 
 ## [The Functional Approach to Programming](https://www.vitalsource.com/products/the-functional-approach-to-programming-guy-cousineau-v9781107263796?duration=perpetual&utm_source=bing&utm_medium=cpc&utm_campaign=VST%20Tier%20Three%20Shopping&msclkid=3983b13c94dd139dbcf8efba3a4a3980)
 
-- Functions as first-class citizens
+- Functions are first-class citizens
 
 - Pure functions
 
@@ -107,18 +107,16 @@ Soundness - Once it compiles, the types are guaranteed to be accurate
 
 ---
 
-## Functions as first-class citizens
-
 <CodeSurfer>
 
-```reason
-// Reason array
-let arr = [|1, 2, 3|];
+```reason title="Functions are first-class citizens" subtitle="Functions are values, too."
+// Reason array (the annotation is not needed!)
+let arr: array(int) = [|1, 2, 3|];
 
 // This is a function
 let double = elem => elem*2;
 
-let doubledArr = Array.map(double, arr); // [2, 4, 6]
+let doubledArr = Array.map(double, arr); // [|2, 4, 6|]
 ```
 
 </CodeSurfer>
@@ -255,6 +253,10 @@ Infer - Static analyzer for Java, C++, C, and Objective-C (for mobile apps)
 
 - Backend: JavaScript
 
+<Notes>
+My implementation is based on one by Gary Benhardt (Destroy All Software)...
+</Notes>
+
 ---
 
 ## Lexer/Tokenizer
@@ -310,7 +312,9 @@ type token =
 </CodeSurfer>
 
 <Notes>
-Smallest pieces that are meaningful
+Tokens are the smallest pieces that are meaningful
+
+Options of a varaint: Constructors or "tags"
 </Notes>
 
 ---
@@ -526,8 +530,8 @@ type defNode = {
 };
 
 type node =
-  | Def(defNode)
-  | Expr(exprNode);
+  | DefNode(defNode)
+  | ExprNode(exprNode);
 ```
 
 ```reason 1:16 title="Types" subtitle="Internal AST nodes"
@@ -549,8 +553,8 @@ type defNode = {
 };
 
 type node =
-  | Def(defNode)
-  | Expr(exprNode);
+  | DefNode(defNode)
+  | ExprNode(exprNode);
 ```
 
 ```reason 17:20 title="Types" subtitle="Top level AST nodes"
@@ -572,8 +576,8 @@ type defNode = {
 };
 
 type node =
-  | Def(defNode)
-  | Expr(exprNode);
+  | DefNode(defNode)
+  | ExprNode(exprNode);
 ```
 
 </CodeSurfer>
@@ -637,6 +641,11 @@ let parseInteger = tokens => {
 
 </CodeSurfer>
 
+<Notes>
+Consume gives us back new tokens in a safe way, validates the type is what we
+say it is.
+</Notes>
+
 ---
 
 <CodeSurfer>
@@ -651,6 +660,10 @@ let parseExpr = tokens =>
 ```
 
 </CodeSurfer>
+
+<Notes>
+Two options for an expression, integer or function call.
+</Notes>
 
 ---
 
@@ -811,7 +824,7 @@ DefNode(
   };
 ```
 
-```reason 8 title="Expression node"
+```reason 9 title="Expression node"
   let rec generate_ = node => {
     switch (node) {
     | DefNode(defNode) =>
@@ -900,10 +913,10 @@ let compile = program => {
   program
   ->Tokenizer.make
   ->Parser.make
-  ->Generator.generate;
+  ->Generator.make;
 };
 
-Js.log(compile("def f(x, y) add(x, y) end"));
+compile("def f(x, y) add(x, y) end");
 ```
 
 </CodeSurfer>
@@ -917,7 +930,7 @@ Js.log(compile("def f(x, y) add(x, y) end"));
 compile("def f(x) 1 end");
 ```
 
-<img src={JSFromAST} />
+<Image size={500} src={JSFromAST} />
 
 ---
 
@@ -927,7 +940,7 @@ compile("def f(x) 1 end");
 compile("def f(x, y) add(x,add(x,y)) end")
 ```
 
-<img src={Generated2} />
+<Image size={500} src={Generated2} />
 
 ---
 
