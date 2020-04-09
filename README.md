@@ -2,28 +2,8 @@
 
 These are the slides I gave for a talk at [this](https://www.meetup.com/Chicago-ReasonML/events/vvwszqybcgbcb) ReasonML monthly meetup.
 
-A recording of the talk should be posted soon!
+A recording of the talk can be found [here](https://drive.google.com/file/d/1m7GUlukBpwNsSE0jqna2Jpq5bRq2F1n6/view?usp=sharing). Please let me know your feedback!
 
 ---
 
-This project was generated with the `npm init code-surfer-deck` command.
-
-## Development
-
-To run the presentation deck in development mode:
-
-```sh
-yarn start
-```
-
-Edit the [`deck.mdx`](deck.mdx) file to get started.
-
-## Exporting
-
-To build the presentation deck:
-
-```sh
-yarn build
-```
-
-For more documentation see [MDX Deck](https://github.com/jxnblk/mdx-deck) and [Code Surfer](https://codesufer.pomb.us/)
+This project was made with MDX Deck and Code Surfer, and the compiler implementation was inspired by Gary Bernhardt's introductory course on compilers (Destroy All Software), which can be found [here](https://www.destroyallsoftware.com/screencasts/catalog/a-compiler-from-scratch).
