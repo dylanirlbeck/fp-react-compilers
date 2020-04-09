@@ -569,7 +569,7 @@ and exprNode =
   | IntegerNode(integerNode)
   | VarRefNode(varRefNode);
 
-type defNode = {
+and defNode = {
   name: string,
   argNames: array(string),
   body: exprNode,
@@ -704,7 +704,7 @@ let make = tokens => {
 };
 ```
 
-```reason 10 title="Parser" subtitle="Start parsing!"
+```reason 11 title="Parser" subtitle="Start parsing!"
 // Will return a tree
 let make = tokens => {
   let rec parse = tokens => {
@@ -838,7 +838,7 @@ DefNode(
   };
 ```
 
-```reason 3:8 title="Function definition node"
+```reason 3:8 title="Function definition node" subtitle="Wrap the body in an ExprNode b/c I messed up the types"
   let rec generate_ = node => {
     switch (node) {
     | DefNode(defNode) =>
