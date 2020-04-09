@@ -824,7 +824,7 @@ DefNode(
   };
 ```
 
-```reason 9 title="Expression node"
+```reason 9 title="Generate an expression"
   let rec generate_ = node => {
     switch (node) {
     | DefNode(defNode) =>
@@ -838,7 +838,7 @@ DefNode(
   };
 ```
 
-```reason 3:8 title="Function definition node" subtitle="Wrap the body in an ExprNode b/c I messed up the types"
+```reason 3:8 title="Generate a function definition" subtitle="Make sure to wrap the body in an ExprNode b/c I messed up the types"
   let rec generate_ = node => {
     switch (node) {
     | DefNode(defNode) =>
