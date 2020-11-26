@@ -2,6 +2,8 @@
 
 These are the slides I gave for a talk at [this](https://www.meetup.com/Chicago-ReasonML/events/vvwszqybcgbcb) ReasonML monthly meetup.
 
+[Here](https://github.com/dylanirlbeck/re-mini-compiler) is the code for the compiler discussed in the talk.
+
 A recording of the talk can be found [here](https://drive.google.com/file/d/1m7GUlukBpwNsSE0jqna2Jpq5bRq2F1n6/view?usp=sharing). Please let me know your feedback!
 
 ---
